@@ -27,7 +27,7 @@ class TwitterAuthController extends Controller
 
         Auth::login($authUser, true);
 
-        return redirect()->route("/players/{$authUser->nickname}");
+        return redirect()->to("/users/{$authUser->id}");
     }
 
     private function findOrCreateUser($twitterUser)
