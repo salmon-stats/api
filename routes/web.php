@@ -19,6 +19,16 @@ Route::get('/auth/twitter', 'Auth\TwitterAuthController@redirectToProvider');
 Route::get('/auth/twitter/callback', 'Auth\TwitterAuthController@handleProviderCallback');
 Route::get('/auth/twitter/logout', 'Auth\TwitterAuthController@logout');
 
+Route::get('/login', function () {
+    $signed_in_as = \Auth::user();
+
+    if ($signed_in_as) {
+        return redirect()->route("users", ['id' => $signed_in_as->id]);
+    }
+    else {
+        return view('login');
+    }
+});
 Route::get('/users/{id}', function ($userId) {
     $user = App\User::where('id', $userId)->first();
 
