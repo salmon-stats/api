@@ -28,7 +28,7 @@ Route::get('/login', function () {
     else {
         return view('login');
     }
-});
+})->name('login');
 Route::get('/users/{id}', function ($userId) {
     $user = App\User::where('id', $userId)->first();
 
@@ -39,4 +39,4 @@ Route::get('/users/{id}', function ($userId) {
     return view('user', [
         'user' => $user,
     ]);
-});
+})->name('users');
