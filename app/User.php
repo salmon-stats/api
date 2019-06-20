@@ -12,10 +12,10 @@ class User extends Authenticatable
     protected $rememberTokenName = false;
 
     protected $fillable = [
-        'name', 'twitter_id',
+        'name', 'twitter_id', 'api_token',
     ];
 
     protected $hidden = [
-        'api_key', 'twitter_id',
+        'api_token', 'twitter_id',
     ];
 }

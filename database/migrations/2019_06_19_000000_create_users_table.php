@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->bigInteger('twitter_id')->unsigned();
+            $table->string('api_token', 64)->unique(); // SHA-256 hex
             $table->timestamps();
         });
     }
