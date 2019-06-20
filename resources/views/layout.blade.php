@@ -7,5 +7,12 @@
     </head>
     <body>
         @yield('content')
+
+        <footer class="footer">
+            <p>
+                Source code is available on <a href="https://github.com/yukidaruma/salmon-stats">GitHub</a>.
+                Made with ❄️ by <a href="https://twitter.com">@Yukinkling</a>
+            </p>
+        </footer>
     </body>
 </html>
