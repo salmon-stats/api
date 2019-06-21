@@ -21,7 +21,6 @@ class CreateSalmonWeapons extends Migration
         $result = $client->get('https://stat.ink/api/v2/weapon');
         if ($result->getStatusCode() == 200) {
             $weapons = json_decode($result->getBody());
-            Log::debug($weapons);
         } else {
             throw new RuntimeException("Stat.ink API is unavailable.");
         }
