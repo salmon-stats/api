@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 
-class StatInkCompatibleKeyProvider extends ServiceProvider
+class BlueprintMacroProvider extends ServiceProvider
 {
     /**
      * Register services.
