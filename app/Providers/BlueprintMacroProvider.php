@@ -14,6 +14,10 @@ class BlueprintMacroProvider extends ServiceProvider
      */
     public function register()
     {
+        Blueprint::macro('playerId', function(string $key) {
+            $this->string($key, \Config::get('constants.player_id_length'));
+        });
+
         Blueprint::macro('statInkKey', function(string $key, int $length = 16) {
             $this->string($key, $length);
         });
