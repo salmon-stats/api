@@ -17,7 +17,7 @@ class SalmonResultsTableSeeder extends Seeder
 
         DB::table('salmon_results')->insert([
             'schedule_id' => '2017-01-01 00:00:00',
-            'start_time' => '2017-01-01 02:34:56',
+            'start_at' => '2017-01-01 02:34:56',
             'members' => json_encode($members),
             'uploader_user_id' => 1,
             'clear_waves' => 3,
