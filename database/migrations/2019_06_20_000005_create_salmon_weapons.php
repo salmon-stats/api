@@ -35,7 +35,7 @@ class CreateSalmonWeapons extends Migration
             }
 
             // Filter weapon variants (e.g. Tentatek Splattershot to Splattershot)
-            array_filter($weapons, function ($weapon) {
+            $weapons = array_filter($weapons, function ($weapon) {
                 return $weapon->{'main_ref'} === $weapon->{'key'};
             });
 
