@@ -52,7 +52,7 @@ class CreateSalmonPlayerResult extends Migration
             $table->unsignedBigInteger('salmon_id');
             $table->playerId('player_id');
             $table->unsignedTinyInteger('wave');
-            $table->unsignedSmallInteger('weapon_id');
+            $table->smallInteger('weapon_id');
 
             $table->primary(['salmon_id', 'player_id', 'wave']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results');

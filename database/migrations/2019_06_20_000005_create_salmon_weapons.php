@@ -20,7 +20,7 @@ class CreateSalmonWeapons extends Migration
         DB::transaction(function () {
             Schema::create('salmon_weapons', function (Blueprint $table) {
                 // Use negative integer for Grizzco weapons and random weapons
-                $table->unsignedSmallInteger('id');
+                $table->smallInteger('id');
                 $table->statInkKey('key', 32);
 
                 $table->primary('id');
@@ -45,6 +45,8 @@ class CreateSalmonWeapons extends Migration
                 (object)['key' => 'kuma_brella',  'splatnet' => 20010],
                 (object)['key' => 'kuma_charger', 'splatnet' => 20020],
                 (object)['key' => 'kuma_slosher', 'splatnet' => 20030],
+                (object)['key' => '_random_green', 'splatnet' => -1],
+                (object)['key' => '_random_gold', 'splatnet' => -2],
             );
 
             foreach ($weapons as $weapon) {
