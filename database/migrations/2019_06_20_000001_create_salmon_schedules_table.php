@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use function GuzzleHttp\json_decode;
 
-class CreateSalmonSchedule extends Migration
+class CreateSalmonSchedulesTable extends Migration
 {
     /**
      * Run the migrations.

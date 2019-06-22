@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 use function GuzzleHttp\json_decode;
 use Mockery\Exception\RuntimeException;
 
-class CreateSalmonWeapons extends Migration
+class CreateSalmonWeaponsTable extends Migration
 {
     /**
      * Run the migrations.
