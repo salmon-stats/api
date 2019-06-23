@@ -8,11 +8,10 @@ use Tests\TestCase;
 
 use Swaggest\JsonSchema\Schema;
 use App\Http\Controllers\SalmonResultController;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UploadSalmonResultTest extends TestCase
 {
-    public $schema;
-
     /**
      * @dataProvider resultJsonPathProvider
      * @doesNotPerformAssertions
@@ -21,7 +20,7 @@ class UploadSalmonResultTest extends TestCase
     {
         // TODO: Figure out how to save disk access
         $schema = Schema::import(json_decode(
-            file_get_contents("schemas/upload-salmon-result.json")
+            file_get_contents('schemas/upload-salmon-result.json')
         ));
 
         try {
@@ -38,19 +37,41 @@ class UploadSalmonResultTest extends TestCase
 
     public function testUploadSalmonResult()
     {
-        $parameters = [
+        $payload = [
             'splatnet_json' => json_decode(file_get_contents($this->resultJsonPathProvider()[0][0]), true),
         ];
-        $parameters['splatnet_json']['play_time'] = \Carbon\Carbon::parse();
-        $request = \Illuminate\Http\Request::create('/api/upload-salmon-result', 'POST', $parameters);
+        $payload['splatnet_json']['play_time'] = \Carbon\Carbon::now()->timestamp;
+        $emptyRequest = \Illuminate\Http\Request::create('/api/upload-salmon-result', 'POST');
+        $validRequest = \Illuminate\Http\Request::create(
+            '/api/upload-salmon-result',
+            'POST',
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload),
+        );
         $controller = new SalmonResultController;
 
-        $successResponse = $controller->store($request, 1);
+        $successResponse = $controller->store($validRequest, 1);
         $this->assertEquals(200, $successResponse->status());
+        $this->assertObjectHasAttribute('salmon_result_id', $successResponse->getData());
 
-        $errorResponse = $controller->store($request, 1);
-        // Uploading same result twice is impossible
-        $this->assertEquals(409, $errorResponse->status());
+        try {
+            $controller->store($validRequest, 1);
+            $this->fail('Uploading same result twice should throw exception');
+        }
+        catch (HttpException $e) {
+            $this->assertEquals(409, $e->getStatusCode());
+        }
+
+        try {
+            $controller->store($emptyRequest, 1);
+            $this->fail('Uploading empty result should throw exception');
+        }
+        catch (HttpException $e) {
+            $this->assertEquals(400, $e->getStatusCode());
+        }
     }
 
     public function resultJsonPathProvider()
