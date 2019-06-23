@@ -16,7 +16,7 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->unique();
-            $table->playerId('player_id')->unique();
+            $table->playerId('player_id')->unique()->nullable();
             $table->unsignedBigInteger('twitter_id');
             $table->string('api_token', 64)->unique(); // SHA-256 hex
             $table->timestamps();
