@@ -15,7 +15,8 @@
         "laravel/socialite": "^4.1",
         "laravel/tinker": "^1.0",
         "mll-lab/laravel-graphql-playground": "^1.0",
-        "nuwave/lighthouse": "^3.7"
+        "nuwave/lighthouse": "^3.7",
+        "swaggest/json-schema": "^0.12.11"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
