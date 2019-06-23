@@ -1,0 +1,578 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "PlayerId": {
+            "type": "string"
+        },
+        "Boss": {
+            "title": "Boss",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "title": "key"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                }
+            },
+            "required": [
+                "key"
+            ]
+        },
+        "BossCounts": {
+            "title": "BossCounts",
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "count": {
+                        "type": "number",
+                        "title": "count"
+                    },
+                    "boss": {
+                        "$ref": "#/definitions/Boss",
+                        "title": "boss"
+                    }
+                },
+                "required": [
+                    "boss",
+                    "count"
+                ]
+            }
+        },
+        "BossKillCounts": {
+            "title": "BossKillCounts",
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "count": {
+                        "type": "number",
+                        "title": "count"
+                    },
+                    "boss": {
+                        "$ref": "#/definitions/Boss",
+                        "title": "boss"
+                    }
+                },
+                "required": [
+                    "boss",
+                    "count"
+                ]
+            }
+        },
+        "Grade": {
+            "title": "Grade",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "enum": [
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5"
+                    ],
+                    "type": "string",
+                    "title": "id"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                },
+                "long_name": {
+                    "type": "string",
+                    "title": "long_name"
+                },
+                "short_name": {
+                    "type": "string",
+                    "title": "short_name"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "Special": {
+            "title": "Special",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                },
+                "id": {
+                    "type": "string",
+                    "title": "id"
+                },
+                "image_a": {
+                    "type": "string",
+                    "title": "image_a"
+                },
+                "image_b": {
+                    "type": "string",
+                    "title": "image_b"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "PlayerResult": {
+            "title": "PlayerResult",
+            "type": "object",
+            "properties": {
+                "weapon_list": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "title": "id"
+                            },
+                            "weapon": {
+                                "$ref": "#/definitions/Weapon",
+                                "title": "weapon"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "weapon"
+                        ]
+                    },
+                    "title": "weapon_list"
+                },
+                "pid": {
+                    "type": "string",
+                    "title": "pid"
+                },
+                "special_counts": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "title": "special_counts"
+                },
+                "dead_count": {
+                    "type": "number",
+                    "title": "dead_count"
+                },
+                "help_count": {
+                    "type": "number",
+                    "title": "help_count"
+                },
+                "ikura_num": {
+                    "type": "number",
+                    "title": "ikura_num"
+                },
+                "golden_ikura_num": {
+                    "type": "number",
+                    "title": "golden_ikura_num"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                },
+                "boss_kill_counts": {
+                    "$ref": "#/definitions/BossKillCounts",
+                    "title": "boss_kill_counts"
+                },
+                "special": {
+                    "$ref": "#/definitions/Special",
+                    "title": "special"
+                },
+                "player_type": {
+                    "$ref": "#/definitions/PlayerType",
+                    "title": "player_type"
+                }
+            },
+            "required": [
+                "boss_kill_counts",
+                "dead_count",
+                "golden_ikura_num",
+                "help_count",
+                "ikura_num",
+                "name",
+                "pid",
+                "special",
+                "special_counts",
+                "weapon_list"
+            ]
+        },
+        "Style": {
+            "title": "Style",
+            "enum": [
+                "boy",
+                "girl"
+            ],
+            "type": "string"
+        },
+        "Species": {
+            "title": "Species",
+            "enum": [
+                "inklings",
+                "octolings"
+            ],
+            "type": "string"
+        },
+        "PlayerType": {
+            "title": "PlayerType",
+            "type": "object",
+            "properties": {
+                "style": {
+                    "$ref": "#/definitions/Style",
+                    "title": "style"
+                },
+                "species": {
+                    "$ref": "#/definitions/Species",
+                    "title": "species"
+                }
+            },
+            "required": [
+                "species",
+                "style"
+            ]
+        },
+        "Weapon": {
+            "title": "Weapon",
+            "type": "object",
+            "properties": {
+                "thumbnail": {
+                    "type": "string",
+                    "title": "thumbnail"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                },
+                "id": {
+                    "type": "string",
+                    "title": "id"
+                },
+                "image": {
+                    "type": "string",
+                    "title": "image"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "CoopSpecialWeapon": {
+            "title": "CoopSpecialWeapon",
+            "type": "object",
+            "properties": {
+                "coop_special_weapon": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "title": "name"
+                        },
+                        "image": {
+                            "type": "string",
+                            "title": "image"
+                        }
+                    },
+                    "required": [
+                        "image",
+                        "name"
+                    ],
+                    "title": "coop_special_weapon"
+                }
+            },
+            "required": [
+                "coop_special_weapon"
+            ]
+        },
+        "Stage": {
+            "title": "Stage",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                },
+                "image": {
+                    "type": "string",
+                    "title": "image"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "Schedule": {
+            "title": "Schedule",
+            "type": "object",
+            "properties": {
+                "start_time": {
+                    "type": "number",
+                    "title": "start_time"
+                },
+                "stage": {
+                    "$ref": "#/definitions/Stage",
+                    "title": "stage"
+                },
+                "weapons": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/Weapon"
+                            },
+                            {
+                                "$ref": "#/definitions/CoopSpecialWeapon"
+                            }
+                        ]
+                    },
+                    "title": "weapons"
+                },
+                "end_time": {
+                    "type": "number",
+                    "title": "end_time"
+                }
+            },
+            "required": [
+                "end_time",
+                "stage",
+                "start_time",
+                "weapons"
+            ]
+        },
+        "JobResult": {
+            "title": "JobResult",
+            "type": "object",
+            "properties": {
+                "failure_wave": {
+                    "anyOf": [
+                        {
+                            "enum": [
+                                1,
+                                2,
+                                3
+                            ],
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "title": "failure_wave"
+                },
+                "failure_reason": {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "title": "failure_reason"
+                },
+                "is_clear": {
+                    "type": "boolean",
+                    "title": "is_clear"
+                }
+            },
+            "required": [
+                "failure_reason",
+                "failure_wave"
+            ]
+        },
+        "EventType": {
+            "title": "EventType",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "enum": [
+                        "cohock-charge",
+                        "fog",
+                        "goldie-seeking",
+                        "griller",
+                        "rush",
+                        "the-mothership",
+                        "water-levels"
+                    ],
+                    "type": "string",
+                    "title": "key"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                }
+            },
+            "required": [
+                "key"
+            ]
+        },
+        "WaterLevel": {
+            "title": "WaterLevel",
+            "type": "object",
+            "properties": {
+                "key": {
+                    "enum": [
+                        "high",
+                        "low",
+                        "normal"
+                    ],
+                    "type": "string",
+                    "title": "key"
+                },
+                "name": {
+                    "type": "string",
+                    "title": "name"
+                }
+            },
+            "required": [
+                "key"
+            ]
+        },
+        "WaveDetail": {
+            "title": "WaveDetail",
+            "type": "object",
+            "properties": {
+                "golden_ikura_pop_num": {
+                    "type": "number",
+                    "title": "golden_ikura_pop_num"
+                },
+                "quota_num": {
+                    "type": "number",
+                    "title": "quota_num"
+                },
+                "golden_ikura_num": {
+                    "type": "number",
+                    "title": "golden_ikura_num"
+                },
+                "ikura_num": {
+                    "type": "number",
+                    "title": "ikura_num"
+                },
+                "event_type": {
+                    "$ref": "#/definitions/EventType",
+                    "title": "event_type"
+                },
+                "water_level": {
+                    "$ref": "#/definitions/WaterLevel",
+                    "title": "water_level"
+                }
+            },
+            "required": [
+                "event_type",
+                "golden_ikura_num",
+                "golden_ikura_pop_num",
+                "ikura_num",
+                "quota_num",
+                "water_level"
+            ]
+        },
+        "SalmonRunResult": {
+            "title": "SalmonRunResult",
+            "type": "object",
+            "properties": {
+                "kuma_point": {
+                    "type": "number",
+                    "title": "kuma_point"
+                },
+                "job_rate": {
+                    "type": "number",
+                    "title": "job_rate"
+                },
+                "end_time": {
+                    "type": "number",
+                    "title": "end_time"
+                },
+                "job_score": {
+                    "type": "number",
+                    "title": "job_score"
+                },
+                "start_time": {
+                    "type": "number",
+                    "title": "start_time"
+                },
+                "play_time": {
+                    "type": "number",
+                    "title": "play_time"
+                },
+                "danger_rate": {
+                    "type": "number",
+                    "title": "danger_rate"
+                },
+                "grade_point_delta": {
+                    "type": "number",
+                    "title": "grade_point_delta"
+                },
+                "job_id": {
+                    "type": "number",
+                    "title": "job_id"
+                },
+                "grade_point": {
+                    "type": "number",
+                    "title": "grade_point"
+                },
+                "boss_counts": {
+                    "$ref": "#/definitions/BossCounts",
+                    "title": "boss_counts"
+                },
+                "player_type": {
+                    "$ref": "#/definitions/PlayerType",
+                    "title": "player_type"
+                },
+                "my_result": {
+                    "$ref": "#/definitions/PlayerResult",
+                    "title": "my_result"
+                },
+                "other_results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PlayerResult"
+                    },
+                    "title": "other_results"
+                },
+                "grade": {
+                    "$ref": "#/definitions/Grade",
+                    "title": "grade"
+                },
+                "schedule": {
+                    "$ref": "#/definitions/Schedule",
+                    "title": "schedule"
+                },
+                "job_result": {
+                    "$ref": "#/definitions/JobResult",
+                    "title": "job_result"
+                },
+                "wave_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/WaveDetail"
+                    },
+                    "title": "wave_details"
+                }
+            },
+            "required": [
+                "boss_counts",
+                "danger_rate",
+                "end_time",
+                "grade",
+                "grade_point",
+                "grade_point_delta",
+                "job_id",
+                "job_result",
+                "job_score",
+                "my_result",
+                "other_results",
+                "play_time",
+                "start_time",
+                "wave_details"
+            ]
+        }
+    },
+    "properties": {
+        "splatnet_json": {
+            "$ref": "#/definitions/SalmonRunResult"
+        }
+    },
+    "required": [
+        "splatnet_json"
+    ]
+}
