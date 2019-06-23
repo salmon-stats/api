@@ -7,6 +7,7 @@ use Tests\TestCase;
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use Swaggest\JsonSchema\Schema;
+use App\Http\Controllers\SalmonResultController;
 
 class UploadSalmonResultTest extends TestCase
 {
@@ -33,6 +34,23 @@ class UploadSalmonResultTest extends TestCase
         catch (Swaggest\JsonSchema\Exception $e) {
             $this->fail("$path should be valid salmon result.");
         }
+    }
+
+    public function testUploadSalmonResult()
+    {
+        $parameters = [
+            'splatnet_json' => json_decode(file_get_contents($this->resultJsonPathProvider()[0][0]), true),
+        ];
+        $parameters['splatnet_json']['play_time'] = \Carbon\Carbon::parse();
+        $request = \Illuminate\Http\Request::create('/api/upload-salmon-result', 'POST', $parameters);
+        $controller = new SalmonResultController;
+
+        $successResponse = $controller->store($request, 1);
+        $this->assertEquals(200, $successResponse->status());
+
+        $errorResponse = $controller->store($request, 1);
+        // Uploading same result twice is impossible
+        $this->assertEquals(409, $errorResponse->status());
     }
 
     public function resultJsonPathProvider()
