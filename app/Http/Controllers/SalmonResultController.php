@@ -96,7 +96,7 @@ class SalmonResultController extends Controller
                 ];
                 $createdSalmonResultId = DB::table('salmon_results')->insertGetId($salmonResult);
 
-                $waveIndexes = range(0, $clearWaves === 3 ? 2 : $clearWaves);
+                $waveIndexes = range(0, $clearWaves === 0 ? 0 : $clearWaves - 1);
                 $waveDetails = $job['wave_details'];
                 foreach ($waveIndexes as $waveIndex) {
                     $waveDetail = $waveDetails[$waveIndex];
