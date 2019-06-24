@@ -43,7 +43,7 @@ class CreateSalmonPlayerResultsTable extends Migration
 
             $table->primary(['salmon_id', 'player_id']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            $table->foreign('player_id')->references('player_id')->on('users');
+            // $table->foreign('player_id')->references('player_id')->on('users');
             $table->foreign('special_id')->references('id')->on('salmon_specials');
         });
 
