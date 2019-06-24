@@ -122,6 +122,18 @@ class SalmonResultController extends Controller
                         'power_egg_collected' => $waveDetail['ikura_num'],
                     ];
                     DB::table('salmon_waves')->insert($salmonWave);
+
+                foreach ($playerResults as $playerResult) {
+                    $playerResultRow = [
+                        'salmon_id' => $createdSalmonResultId,
+                        'player_id' => $playerResult['pid'],
+                        'golden_eggs' => $playerResult['golden_ikura_num'],
+                        'power_eggs' => $playerResult['ikura_num'],
+                        'rescue' => $playerResult['help_count'],
+                        'death' => $playerResult['dead_count'],
+                        'special_id' => (int) $playerResult['special']['id'],
+                    ];
+                    DB::table('salmon_player_results')->insert($playerResultRow);
                 }
 
                 return response()->json(['salmon_result_id' => $createdSalmonResultId]);
