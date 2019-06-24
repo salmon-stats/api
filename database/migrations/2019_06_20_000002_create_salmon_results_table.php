@@ -13,7 +13,7 @@ class CreateSalmonResultsTable extends Migration
      */
     public function up()
     {
-        Schema::create('fail_reasons', function (Blueprint $table) {
+        Schema::create('salmon_fail_reasons', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->statInkKey('key');
         });
@@ -24,7 +24,7 @@ class CreateSalmonResultsTable extends Migration
         ];
 
         foreach ($fail_reasons as $key) {
-            DB::table('fail_reasons')->insert(['key' => $key]);
+            DB::table('salmon_fail_reasons')->insert(['key' => $key]);
         }
 
         Schema::create('salmon_results', function (Blueprint $table) {
@@ -50,7 +50,7 @@ class CreateSalmonResultsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fail_reasons');
+        Schema::dropIfExists('salmon_fail_reasons');
         Schema::dropIfExists('salmon_results');
     }
 }
