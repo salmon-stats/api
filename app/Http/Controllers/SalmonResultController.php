@@ -134,6 +134,16 @@ class SalmonResultController extends Controller
                         'special_id' => (int) $playerResult['special']['id'],
                     ];
                     DB::table('salmon_player_results')->insert($playerResultRow);
+
+                    $bossKillCounts = array_map(function ($boss) {
+                        return $boss['count'];
+                    }, $playerResult['boss_kill_counts']);
+
+                    DB::table('salmon_player_boss_eliminations')->insert([
+                        'salmon_id' => $createdSalmonResultId,
+                        'player_id' => $playerResult['pid'],
+                        'counts' => json_encode($bossKillCounts),
+                    ]);
                 }
 
                 return response()->json(['salmon_result_id' => $createdSalmonResultId]);
