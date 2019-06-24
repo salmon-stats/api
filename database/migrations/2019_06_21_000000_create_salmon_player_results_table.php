@@ -61,11 +61,10 @@ class CreateSalmonPlayerResultsTable extends Migration
         Schema::create('salmon_player_boss_eliminations', function (Blueprint $table) {
             $table->unsignedBigInteger('salmon_id');
             $table->playerId('player_id');
-            $table->unsignedTinyInteger('wave');
             $table->unsignedTinyInteger('boss_id');
             $table->unsignedTinyInteger('count');
 
-            $table->primary(['salmon_id', 'player_id', 'wave', 'boss_id'], 'salmon_player_boss_eliminations_pk');
+            $table->primary(['salmon_id', 'player_id', 'boss_id'], 'salmon_player_boss_eliminations_pk');
             $table->foreign('salmon_id')->references('id')->on('salmon_results');
             $table->foreign('player_id')->references('player_id')->on('users');
         });
