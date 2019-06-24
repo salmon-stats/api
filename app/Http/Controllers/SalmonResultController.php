@@ -81,13 +81,17 @@ class SalmonResultController extends Controller
                     );
                 }
 
+                $failReason = \App\SalmonFailReason::where(
+                    'key', $job['job_result']['failure_reason']
+                )->first();
+
                 $salmonResult = [
                     'schedule_id' => Carbon::parse($job['start_time']),
                     'start_at' => Carbon::parse($job['play_time']),
                     'members' => json_encode($memberIds),
                     'uploader_user_id' => $uploaderUserId,
                     'clear_waves' => $clearWaves,
-                    'fail_reason_id' => null, // TODO: $failReason
+                    'fail_reason_id' => $failReason ? $failReason->id : null,
                     'danger_rate' => $job['danger_rate'],
                 ];
                 $createdSalmonResultId = DB::table('salmon_results')->insertGetId($salmonResult);
