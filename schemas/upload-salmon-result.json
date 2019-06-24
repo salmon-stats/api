@@ -21,45 +21,145 @@
                 "key"
             ]
         },
+        "BossCount": {
+            "title": "BossCount",
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "number",
+                    "title": "count"
+                },
+                "boss": {
+                    "$ref": "#/definitions/Boss",
+                    "title": "boss"
+                }
+            },
+            "required": [
+                "count"
+            ]
+        },
         "BossCounts": {
             "title": "BossCounts",
             "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "properties": {
-                    "count": {
-                        "type": "number",
-                        "title": "count"
-                    },
-                    "boss": {
-                        "$ref": "#/definitions/Boss",
-                        "title": "boss"
-                    }
+            "properties": {
+                "3": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "3"
                 },
-                "required": [
-                    "count"
-                ]
-            }
+                "6": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "6"
+                },
+                "9": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "9"
+                },
+                "12": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "12"
+                },
+                "13": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "13"
+                },
+                "14": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "14"
+                },
+                "15": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "15"
+                },
+                "16": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "16"
+                },
+                "21": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "21"
+                }
+            },
+            "required": [
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "21",
+                "3",
+                "6",
+                "9"
+            ]
+        },
+        "BossKillCount": {
+            "title": "BossKillCount",
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "number",
+                    "title": "count"
+                },
+                "boss": {
+                    "$ref": "#/definitions/Boss",
+                    "title": "boss"
+                }
+            },
+            "required": [
+                "count"
+            ]
         },
         "BossKillCounts": {
             "title": "BossKillCounts",
             "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "properties": {
-                    "count": {
-                        "type": "number",
-                        "title": "count"
-                    },
-                    "boss": {
-                        "$ref": "#/definitions/Boss",
-                        "title": "boss"
-                    }
+            "properties": {
+                "3": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "3"
                 },
-                "required": [
-                    "count"
-                ]
-            }
+                "6": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "6"
+                },
+                "9": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "9"
+                },
+                "12": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "12"
+                },
+                "13": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "13"
+                },
+                "14": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "14"
+                },
+                "15": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "15"
+                },
+                "16": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "16"
+                },
+                "21": {
+                    "$ref": "#/definitions/BossKillCount",
+                    "title": "21"
+                }
+            },
+            "required": [
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "21",
+                "3",
+                "6",
+                "9"
+            ]
         },
         "Grade": {
             "title": "Grade",
