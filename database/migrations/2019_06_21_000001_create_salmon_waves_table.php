@@ -16,26 +16,29 @@ class CreateSalmonWavesTable extends Migration
         Schema::create('salmon_events', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->statInkKey('key');
+            $table->string('name', 64);
             $table->string('splatnet', 32);
         });
         $salmon_events = [
-            ['cohock_charge', 'cohock-charge'],
-            ['fog', 'fog'],
-            ['goldie_seeking','goldie-seeking'],
-            ['griller', 'griller'],
-            ['mothership', 'the-mothership'],
-            ['rush', 'rush'],
+            ['cohock_charge', 'Cohock Charge', 'cohock-charge'],
+            ['fog', 'Fog', 'fog'],
+            ['goldie_seeking', 'Goldie Seeking', 'goldie-seeking'],
+            ['griller', 'The Griller', 'griller'],
+            ['mothership', 'The Mothership', 'the-mothership'],
+            ['rush', 'Rush', 'rush'],
         ];
         foreach ($salmon_events as $salmon_event) {
             DB::table('salmon_events')->insert([
                 'key' => $salmon_event[0],
-                'splatnet' => $salmon_event[1]
+                'name' => $salmon_event[1],
+                'splatnet' => $salmon_event[2],
             ]);
         }
 
         Schema::create('salmon_water_levels', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->statInkKey('key');
+            $table->string('name', 64);
             $table->string('splatnet', 32);
         });
         $salmon_water_levels = [
@@ -46,7 +49,8 @@ class CreateSalmonWavesTable extends Migration
         foreach ($salmon_water_levels as $salmon_water_level) {
             DB::table('salmon_water_levels')->insert([
                 'key' => $salmon_water_level[0],
-                'splatnet' => $salmon_water_level[1]
+                'name' => $salmon_water_level[1],
+                'splatnet' => $salmon_water_level[2]
             ]);
         }
 
