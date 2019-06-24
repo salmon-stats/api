@@ -144,6 +144,15 @@ class SalmonResultController extends Controller
                         'player_id' => $playerResult['pid'],
                         'counts' => json_encode($bossKillCounts),
                     ]);
+
+                    foreach ($waveIndexes as $waveIndex) {
+                        DB::table('salmon_player_special_uses')->insert([
+                            'salmon_id' => $createdSalmonResultId,
+                            'player_id' => $playerResult['pid'],
+                            'wave' => $waveIndex,
+                            'count' => $playerResult['special_counts'][$waveIndex],
+                        ]);
+                    }
                 }
 
                 return response()->json(['salmon_result_id' => $createdSalmonResultId]);
