@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\SalmonResultController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,12 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:api']], function() {
+    Route::post('/users/my', function (Request $request) {
+        return $request->user();
+    });
+    Route::post('/upload-salmon-result', function (Request $request) {
+        $controller = new SalmonResultController;
+        $controller->store($request, \Auth::user()->id);
+    });
 });

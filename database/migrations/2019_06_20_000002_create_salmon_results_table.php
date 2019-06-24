@@ -13,18 +13,18 @@ class CreateSalmonResultsTable extends Migration
      */
     public function up()
     {
-        Schema::create('fail_reasons', function (Blueprint $table) {
+        Schema::create('salmon_fail_reasons', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->statInkKey('key');
         });
 
-        $fail_reasons = [
-            'annihilated',
-            'time_up',
+        $failReasons = [
+            'wipe_out',
+            'time_limit',
         ];
 
-        foreach ($fail_reasons as $key) {
-            DB::table('fail_reasons')->insert(['key' => $key]);
+        foreach ($failReasons as $key) {
+            DB::table('salmon_fail_reasons')->insert(['key' => $key]);
         }
 
         Schema::create('salmon_results', function (Blueprint $table) {
@@ -40,6 +40,7 @@ class CreateSalmonResultsTable extends Migration
 
             $table->foreign('schedule_id')->references('schedule_id')->on('salmon_schedules');
             $table->foreign('uploader_user_id')->references('id')->on('users');
+            $table->foreign('fail_reason_id')->references('id')->on('salmon_fail_reasons');
         });
     }
 
@@ -50,7 +51,7 @@ class CreateSalmonResultsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fail_reasons');
+        Schema::dropIfExists('salmon_fail_reasons');
         Schema::dropIfExists('salmon_results');
     }
 }

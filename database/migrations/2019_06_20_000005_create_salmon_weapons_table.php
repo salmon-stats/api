@@ -36,7 +36,11 @@ class CreateSalmonWeaponsTable extends Migration
 
             // Filter weapon variants (e.g. Tentatek Splattershot to Splattershot)
             $weapons = array_filter($weapons, function ($weapon) {
-                return $weapon->{'main_ref'} === $weapon->{'key'};
+                return
+                    // Do not filter splatscope and liter4k_scope
+                    $weapon->{'key'} === 'splatscope' ||
+                    $weapon->{'key'} === 'liter4k_scope' ||
+                    $weapon->{'main_ref'} === $weapon->{'key'};
             });
 
             array_push(
