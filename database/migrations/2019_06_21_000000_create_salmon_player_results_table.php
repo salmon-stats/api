@@ -16,11 +16,10 @@ class CreateSalmonPlayerResultsTable extends Migration
         Schema::create('salmon_player_results', function (Blueprint $table) {
             $table->unsignedBigInteger('salmon_id');
             $table->playerId('player_id');
-            $table->unsignedBigInteger('player_job_id');
             $table->unsignedBigInteger('golden_eggs');
             $table->unsignedBigInteger('power_eggs');
 
-            $table->primary(['salmon_id', 'player_id', 'player_job_id']);
+            $table->primary(['salmon_id', 'player_id']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results');
             $table->foreign('player_id')->references('player_id')->on('users');
         });
