@@ -55,7 +55,7 @@ class CreateSalmonPlayerResultsTable extends Migration
 
             $table->primary(['salmon_id', 'player_id', 'wave']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            $table->foreign('player_id')->references('player_id')->on('users');
+            // $table->foreign('player_id')->references('player_id')->on('users');
         });
 
         Schema::create('salmon_player_boss_eliminations', function (Blueprint $table) {
@@ -66,7 +66,7 @@ class CreateSalmonPlayerResultsTable extends Migration
 
             $table->primary(['salmon_id', 'player_id', 'boss_id'], 'salmon_player_boss_eliminations_pk');
             $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            $table->foreign('player_id')->references('player_id')->on('users');
+            // $table->foreign('player_id')->references('player_id')->on('users');
         });
 
         Schema::create('salmon_player_weapons', function (Blueprint $table) {
@@ -77,7 +77,7 @@ class CreateSalmonPlayerResultsTable extends Migration
 
             $table->primary(['salmon_id', 'player_id', 'wave']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            $table->foreign('player_id')->references('player_id')->on('users');
+            // $table->foreign('player_id')->references('player_id')->on('users');
             $table->foreign('weapon_id')->references('id')->on('salmon_weapons');
         });
     }
