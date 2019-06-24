@@ -53,7 +53,7 @@ class CreateSalmonWavesTable extends Migration
         Schema::create('salmon_waves', function (Blueprint $table) {
             $table->unsignedBigInteger('salmon_id');
             $table->unsignedTinyInteger('wave');
-            $table->unsignedTinyInteger('event_id');
+            $table->unsignedTinyInteger('event_id')->nullable();
             $table->unsignedTinyInteger('water_id');
             $table->unsignedSmallInteger('golden_egg_quota')->integer()->null();
             $table->unsignedSmallInteger('golden_egg_appearances')->integer()->null();
