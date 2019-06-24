@@ -35,10 +35,14 @@ class UploadSalmonResultTest extends TestCase
         }
     }
 
-    public function testUploadSalmonResult()
+    /**
+     * @dataProvider resultJsonPathProvider
+     */
+    public function testUploadSalmonResult($path)
     {
         $payload = [
-            'splatnet_json' => json_decode(file_get_contents($this->resultJsonPathProvider()[0][0]), true),
+            // 'splatnet_json' => json_decode(file_get_contents($this->resultJsonPathProvider()[0][0]), true),
+            'splatnet_json' => json_decode(file_get_contents($path), true),
         ];
         $payload['splatnet_json']['play_time'] = \Carbon\Carbon::now()->timestamp;
         $emptyRequest = \Illuminate\Http\Request::create('/api/upload-salmon-result', 'POST');
