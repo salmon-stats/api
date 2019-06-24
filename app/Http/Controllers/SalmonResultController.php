@@ -132,7 +132,7 @@ class SalmonResultController extends Controller
         }
         catch (\Exception $e) {
             Log::error($e);
-            abort(500, "Unhandled Exception: {$e->getCode()}");
+            abort(500, "Unhandled Exception: {$e->getMessage()}");
         }
     }
 
