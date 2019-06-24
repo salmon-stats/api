@@ -122,6 +122,7 @@ class SalmonResultController extends Controller
                         'power_egg_collected' => $waveDetail['ikura_num'],
                     ];
                     DB::table('salmon_waves')->insert($salmonWave);
+                }
 
                 foreach ($playerResults as $playerResult) {
                     $playerResultRow = [
@@ -151,6 +152,13 @@ class SalmonResultController extends Controller
                             'player_id' => $playerResult['pid'],
                             'wave' => $waveIndex,
                             'count' => $playerResult['special_counts'][$waveIndex],
+                        ]);
+
+                        DB::table('salmon_player_weapons')->insert([
+                            'salmon_id' => $createdSalmonResultId,
+                            'player_id' => $playerResult['pid'],
+                            'wave' => $waveIndex,
+                            'weapon_id' => (int) $playerResult['weapon_list'][$waveIndex]['id'],
                         ]);
                     }
                 }
