@@ -18,12 +18,12 @@ class CreateSalmonResultsTable extends Migration
             $table->statInkKey('key');
         });
 
-        $fail_reasons = [
-            'annihilated',
-            'time_up',
+        $failReasons = [
+            'wipe_out',
+            'time_limit',
         ];
 
-        foreach ($fail_reasons as $key) {
+        foreach ($failReasons as $key) {
             DB::table('salmon_fail_reasons')->insert(['key' => $key]);
         }
 
