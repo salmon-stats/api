@@ -19,7 +19,7 @@ class CreateSalmonWavesTable extends Migration
             $table->string('name', 64);
             $table->string('splatnet', 32);
         });
-        $salmon_events = [
+        $salmonEvents = [
             ['cohock_charge', 'Cohock Charge', 'cohock-charge'],
             ['fog', 'Fog', 'fog'],
             ['goldie_seeking', 'Goldie Seeking', 'goldie-seeking'],
@@ -27,11 +27,11 @@ class CreateSalmonWavesTable extends Migration
             ['mothership', 'The Mothership', 'the-mothership'],
             ['rush', 'Rush', 'rush'],
         ];
-        foreach ($salmon_events as $salmon_event) {
+        foreach ($salmonEvents as $salmonEvent) {
             DB::table('salmon_events')->insert([
-                'key' => $salmon_event[0],
-                'name' => $salmon_event[1],
-                'splatnet' => $salmon_event[2],
+                'key' => $salmonEvent[0],
+                'name' => $salmonEvent[1],
+                'splatnet' => $salmonEvent[2],
             ]);
         }
 
@@ -41,16 +41,16 @@ class CreateSalmonWavesTable extends Migration
             $table->string('name', 64);
             $table->string('splatnet', 32);
         });
-        $salmon_water_levels = [
+        $waterLevels = [
             ['low', 'Low Tide', 'low'],
             ['normal', 'Mid Tide', 'normal'],
             ['high', 'High Tide', 'high'],
         ];
-        foreach ($salmon_water_levels as $salmon_water_level) {
+        foreach ($waterLevels as $waterLevel) {
             DB::table('salmon_water_levels')->insert([
-                'key' => $salmon_water_level[0],
-                'name' => $salmon_water_level[1],
-                'splatnet' => $salmon_water_level[2]
+                'key' => $waterLevel[0],
+                'name' => $waterLevel[1],
+                'splatnet' => $waterLevel[2]
             ]);
         }
 

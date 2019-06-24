@@ -19,7 +19,7 @@ class CreateSalmonBossesTable extends Migration
             $table->string('splatnet', 32);
         });
 
-        $salmon_bosses = [
+        $salmonBosses = [
             ['goldie',     3, 'sakelien-golden'],
             ['steelhead',  6, 'sakelien-bomber'],
             ['flyfish',    9, 'sakelien-cup-twins'],
@@ -31,7 +31,7 @@ class CreateSalmonBossesTable extends Migration
             ['drizzler',  21, 'sakerocket'],
         ];
 
-        foreach ($salmon_bosses as $boss) {
+        foreach ($salmonBosses as $boss) {
             DB::table('salmon_bosses')->insert([
                 'id' => $boss[1],
                 'key' => $boss[0],

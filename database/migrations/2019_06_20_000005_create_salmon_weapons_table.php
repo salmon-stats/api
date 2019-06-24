@@ -38,9 +38,9 @@ class CreateSalmonWeaponsTable extends Migration
             $weapons = array_filter($weapons, function ($weapon) {
                 return
                     // Do not filter splatscope and liter4k_scope
-                    $weapon->{'key'} === 'splatscope' ||
-                    $weapon->{'key'} === 'liter4k_scope' ||
-                    $weapon->{'main_ref'} === $weapon->{'key'};
+                    $weapon->key === 'splatscope' ||
+                    $weapon->key === 'liter4k_scope' ||
+                    $weapon->main_ref === $weapon->key;
             });
 
             array_push(
@@ -55,8 +55,8 @@ class CreateSalmonWeaponsTable extends Migration
 
             foreach ($weapons as $weapon) {
                 DB::table('salmon_weapons')->insert([
-                    'id' => $weapon->{'splatnet'},
-                    'key' => $weapon->{'key'},
+                    'id' => $weapon->splatnet,
+                    'key' => $weapon->key,
                 ]);
             }
         });

@@ -29,7 +29,7 @@ class CreateSalmonSchedulesTable extends Migration
                 // $table->foreign('rare_weapon_id')->references('id')->on('salmon_weapons');
             });
 
-            $stage_japanese_names = [
+            $stageJapaneseNames = [
                 'シェケナダム' => 1,
                 '難破船ドン・ブラコ' => 2,
                 '海上集落シャケト場' => 3,
@@ -40,28 +40,28 @@ class CreateSalmonSchedulesTable extends Migration
             $client = new Client();
             $result = $client->get('https://spla2.yuu26.com/coop');
             if ($result->getStatusCode() == 200) {
-                $schedules = json_decode($result->getBody())->{'result'};
+                $schedules = json_decode($result->getBody())->result;
             } else {
                 throw new RuntimeException("spla2.yuu26.com API is unavailable.");
             }
 
             foreach ($schedules as $schedule) {
-                if (!$schedule->{'weapons'}) {
+                if (!$schedule->weapons) {
                     continue;
                 }
 
                 $weapons = array_map(function ($weapon) {
-                    return $weapon->{'id'};
-                }, $schedule->{'weapons'});
-                $start_time = Carbon::parse($schedule->{'start_utc'});
-                $end_time = Carbon::parse($schedule->{'end_utc'});
+                    return $weapon->id;
+                }, $schedule->weapons);
+                $startTime = Carbon::parse($schedule->start_utc);
+                $endTime = Carbon::parse($schedule->end_utc);
 
                 DB::table('salmon_schedules')->insert([
-                    'schedule_id' => $start_time,
-                    'end_at' => $end_time,
+                    'schedule_id' => $startTime,
+                    'end_at' => $endTime,
                     'weapons' => json_encode($weapons),
                     'rare_weapon_id' => 20000,
-                    'stage_id' => $stage_japanese_names[$schedule->{'stage'}->{'name'}],
+                    'stage_id' => $stageJapaneseNames[$schedule->stage->name],
                 ]);
             }
         });
