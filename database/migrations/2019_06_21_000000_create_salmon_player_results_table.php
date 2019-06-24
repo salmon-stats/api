@@ -13,6 +13,25 @@ class CreateSalmonPlayerResultsTable extends Migration
      */
     public function up()
     {
+        Schema::create('salmon_specials', function (Blueprint $table) {
+            $table->unsignedTinyInteger('id')->primary();
+            $table->statInkKey('key');
+            $table->string('name', 32);
+        });
+        $specials = [
+            [2, 'pitcher', 'Bomb Launcher'],
+            [7, 'presser', 'Sting Ray'],
+            [8, 'jetpack', 'Inkjet'],
+            [9, 'chakuchi', 'Splashdown'],
+        ];
+        foreach ($specials as $special) {
+            DB::table('salmon_specials')->insert([
+                'id' => $special[0],
+                'key' => $special[1],
+                'name' => $special[2],
+            ]);
+        }
+
         Schema::create('salmon_player_results', function (Blueprint $table) {
             $table->unsignedBigInteger('salmon_id');
             $table->playerId('player_id');
@@ -67,6 +86,7 @@ class CreateSalmonPlayerResultsTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('salmon_specials');
         Schema::dropIfExists('salmon_player_results');
         Schema::dropIfExists('salmon_player_special_uses');
         Schema::dropIfExists('salmon_player_boss_eliminations');
