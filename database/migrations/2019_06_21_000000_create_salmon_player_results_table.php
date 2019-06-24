@@ -37,10 +37,14 @@ class CreateSalmonPlayerResultsTable extends Migration
             $table->playerId('player_id');
             $table->unsignedBigInteger('golden_eggs');
             $table->unsignedBigInteger('power_eggs');
+            $table->unsignedTinyInteger('rescue');
+            $table->unsignedTinyInteger('death');
+            $table->unsignedTinyInteger('special_id');
 
             $table->primary(['salmon_id', 'player_id']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results');
             $table->foreign('player_id')->references('player_id')->on('users');
+            $table->foreign('special_id')->references('id')->on('salmon_specials');
         });
 
         Schema::create('salmon_player_special_uses', function (Blueprint $table) {
