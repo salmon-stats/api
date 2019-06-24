@@ -147,19 +147,23 @@ class SalmonResultController extends Controller
                     ]);
 
                     foreach ($waveIndexes as $waveIndex) {
-                        DB::table('salmon_player_special_uses')->insert([
-                            'salmon_id' => $createdSalmonResultId,
-                            'player_id' => $playerResult['pid'],
-                            'wave' => $waveIndex,
-                            'count' => $playerResult['special_counts'][$waveIndex],
-                        ]);
+                        try {
+                            DB::table('salmon_player_special_uses')->insert([
+                                'salmon_id' => $createdSalmonResultId,
+                                'player_id' => $playerResult['pid'],
+                                'wave' => $waveIndex,
+                                'count' => $playerResult['special_counts'][$waveIndex],
+                            ]);
 
-                        DB::table('salmon_player_weapons')->insert([
-                            'salmon_id' => $createdSalmonResultId,
-                            'player_id' => $playerResult['pid'],
-                            'wave' => $waveIndex,
-                            'weapon_id' => (int) $playerResult['weapon_list'][$waveIndex]['id'],
-                        ]);
+                            DB::table('salmon_player_weapons')->insert([
+                                'salmon_id' => $createdSalmonResultId,
+                                'player_id' => $playerResult['pid'],
+                                'wave' => $waveIndex,
+                                'weapon_id' => (int) $playerResult['weapon_list'][$waveIndex]['id'],
+                            ]);
+                        } catch (\ErrorException $e) {
+                            // $waveIndex doesn't exist because player disconnected
+                        }
                     }
                 }
 
