@@ -96,6 +96,34 @@ class SalmonResultController extends Controller
                 ];
                 $createdSalmonResultId = DB::table('salmon_results')->insertGetId($salmonResult);
 
+                $waveIndexes = range(0, $clearWaves === 3 ? 2 : $clearWaves);
+                $waveDetails = $job['wave_details'];
+                foreach ($waveIndexes as $waveIndex) {
+                    $waveDetail = $waveDetails[$waveIndex];
+                    // You don't have to validate event_type and water_level
+                    // because it's already done by json schema.
+
+                    // $event = null if key is 'water-levels'
+                    $event = \App\SalmonEvent::where(
+                        'splatnet', $waveDetail['event_type']['key']
+                    )->first();
+                    $waterLevel = \App\SalmonWaterLevel::where(
+                        'splatnet', $waveDetail['water_level']['key'],
+                    )->first()->id;
+
+                    $salmonWave = [
+                        'salmon_id' => $createdSalmonResultId,
+                        'wave' => $waveIndex,
+                        'event_id' => $event ? $event->id : null,
+                        'water_id' => $waterLevel,
+                        'golden_egg_quota' => $waveDetail['quota_num'],
+                        'golden_egg_appearances' => $waveDetail['golden_ikura_pop_num'],
+                        'golden_egg_delivered' => $waveDetail['golden_ikura_num'],
+                        'power_egg_collected' => $waveDetail['ikura_num'],
+                    ];
+                    DB::table('salmon_waves')->insert($salmonWave);
+                }
+
                 return response()->json(['salmon_result_id' => $createdSalmonResultId]);
             });
         }
