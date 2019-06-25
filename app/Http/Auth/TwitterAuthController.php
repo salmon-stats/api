@@ -27,7 +27,7 @@ class TwitterAuthController extends Controller
 
         Auth::login($authUser, true);
 
-        return redirect()->to("/users/{$authUser->id}");
+        return redirect()->to(env('APP_FRONTEND_ORIGIN') . "/users/{$authUser->id}");
     }
 
     private function findOrCreateUser($twitterUser)

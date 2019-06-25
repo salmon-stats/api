@@ -190,12 +190,6 @@ class SalmonResultController extends Controller
             ->with(['playerResults', 'schedule', 'waves'])
             ->firstOrFail();
 
-        if (\Route::getCurrentRoute()->getPrefix() === 'api') {
-            return $salmonResult;
-        }
-
-        return view('salmon-result', [
-            'result' => $salmonResult,
-        ]);
+        return $salmonResult;
     }
 }
