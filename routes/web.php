@@ -40,3 +40,4 @@ Route::get('/users/{id}', function ($userId) {
         'user' => $user,
     ]);
 })->name('users');
+Route::get('/results/{id}', 'SalmonResultController@show');

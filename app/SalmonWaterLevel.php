@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class SalmonWaterLevel extends Model
 {
     protected $table = 'salmon_water_levels';
-    protected $visible = ['id', 'key', 'splatnet'];
+    protected $hide = [];
 }
