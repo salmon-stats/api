@@ -22,7 +22,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/users/my', function (Request $request) {
         return $request->user();
     });
-    Route::post('/upload-salmon-result', function (Request $request) {
+    Route::post('/results', function (Request $request) {
         $controller = new SalmonResultController;
         $controller->store($request, \Auth::user()->id);
     });
