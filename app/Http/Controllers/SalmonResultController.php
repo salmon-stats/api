@@ -187,7 +187,7 @@ class SalmonResultController extends Controller
     public function show($salmonId)
     {
         $salmonResult = \App\SalmonResult::where('id', $salmonId)
-            ->with(['waves'])
+            ->with(['schedule', 'waves'])
             ->firstOrFail();
 
         if (\Route::getCurrentRoute()->getPrefix() === 'api') {

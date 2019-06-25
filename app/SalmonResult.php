@@ -12,6 +12,12 @@ class SalmonResult extends Model
         'members' => 'array',
     ];
 
+    public function schedule()
+    {
+        return $this
+            ->hasOne('App\SalmonSchedule', 'schedule_id', 'schedule_id');
+    }
+
     public function waves()
     {
         return $this
