@@ -10,7 +10,7 @@ class SalmonPlayerResult extends Model
     use \Awobaz\Compoships\Compoships;
 
     protected $table = 'salmon_player_results';
-    protected $hidden = [];
+    protected $hidden = ['salmon_id'];
 
     public function bossEliminations()
     {
