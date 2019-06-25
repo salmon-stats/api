@@ -14,7 +14,11 @@ use App\Http\Controllers\SalmonResultController;
 |
 */
 
-Route::group(['middleware' => ['auth:api']], function() {
+// Public endpoints
+Route::get('/results/{id}', 'SalmonResultController@show');
+
+// Endpoints requires authentication
+Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/users/my', function (Request $request) {
         return $request->user();
     });
