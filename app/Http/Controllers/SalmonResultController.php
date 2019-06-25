@@ -181,12 +181,16 @@ class SalmonResultController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
+     * @param  int  $salmonId
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($salmonId)
     {
-        //
+        $salmonResult = \App\SalmonResult::where('id', $salmonId)
+            ->firstOrFail();
+
+        return view('salmon-result', [
+            'result' => $salmonResult,
+        ]);
     }
 }
