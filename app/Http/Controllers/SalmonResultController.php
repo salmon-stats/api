@@ -189,6 +189,10 @@ class SalmonResultController extends Controller
         $salmonResult = \App\SalmonResult::where('id', $salmonId)
             ->firstOrFail();
 
+        if (\Route::getCurrentRoute()->getPrefix() === 'api') {
+            return $salmonResult;
+        }
+
         return view('salmon-result', [
             'result' => $salmonResult,
         ]);
