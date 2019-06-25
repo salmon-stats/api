@@ -12,6 +12,13 @@ class SalmonResult extends Model
         'members' => 'array',
     ];
 
+    public function playerResults()
+    {
+        return $this
+            ->hasMany('App\SalmonPlayerResult', 'salmon_id')
+            ->with(['bossEliminations', 'specialUses', 'weapons']);
+    }
+
     public function schedule()
     {
         return $this
