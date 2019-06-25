@@ -11,4 +11,12 @@ class SalmonResult extends Model
     protected $casts = [
         'members' => 'array',
     ];
+
+    public function waves()
+    {
+        return $this
+            ->hasMany('App\SalmonWave', 'salmon_id')
+            ->with(['event', 'water'])
+            ->orderBy('wave');
+    }
 }
