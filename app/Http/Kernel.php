@@ -43,6 +43,16 @@ class Kernel extends HttpKernel
 
             \App\Http\Middleware\Cors::class
         ],
+
+        'stateful_api' => [
+            \App\Http\Middleware\EncryptCookies::class,
+            \App\Http\Middleware\Cors::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            'throttle:10,1',
+            'bindings',
+        ],
     ];
 
     /**
