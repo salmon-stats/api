@@ -41,17 +41,18 @@ class Kernel extends HttpKernel
             'throttle:5,1',
             'bindings',
 
-            \App\Http\Middleware\Cors::class
+            //\Spatie\Cors\Cors::class
         ],
 
         'stateful_api' => [
+            'throttle:10,1',
+            'bindings',
+
+            //\Spatie\Cors\Cors::class,
             \App\Http\Middleware\EncryptCookies::class,
-            \App\Http\Middleware\Cors::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            'throttle:10,1',
-            'bindings',
         ],
     ];
 
