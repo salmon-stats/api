@@ -17,6 +17,7 @@
         "laravel/tinker": "^1.0",
         "mll-lab/laravel-graphql-playground": "^1.0",
         "nuwave/lighthouse": "^3.7",
+        "spatie/laravel-cors": "^1.5",
         "swaggest/json-schema": "^0.12.11"
     },
     "require-dev": {
