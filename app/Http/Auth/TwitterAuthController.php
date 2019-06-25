@@ -38,14 +38,12 @@ class TwitterAuthController extends Controller
             return $authUser;
         }
 
-        $token = random_bytes(60);
-
         return User::create([
             // Use twitter screen name (@example without `@`) as name
             'name' => strtolower($twitterUser->nickname),
             'twitter_id' => $twitterUser->id,
             // api_token must be unique; 256-bit hash won't practically collide.
-            'api_token' => hash('sha256', $token),
+            'api_token' => \App\Helpers\Helper::generateApiToken(),
         ]);
     }
 
