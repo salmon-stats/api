@@ -51,7 +51,7 @@ class CreateSalmonResultsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('salmon_fail_reasons');
         Schema::dropIfExists('salmon_results');
+        Schema::dropIfExists('salmon_fail_reasons');
     }
 }

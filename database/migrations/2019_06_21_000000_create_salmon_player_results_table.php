@@ -88,9 +88,9 @@ class CreateSalmonPlayerResultsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('salmon_specials');
         Schema::dropIfExists('salmon_player_results');
         Schema::dropIfExists('salmon_player_special_uses');
+        Schema::dropIfExists('salmon_specials');
         Schema::dropIfExists('salmon_player_boss_eliminations');
         Schema::dropIfExists('salmon_player_weapons');
     }
