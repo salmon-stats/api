@@ -19,7 +19,7 @@ Route::get('/metadata', function (Request $request) {
     $user = $request::user();
 
     if ($user) {
-        $user->makeVisible('api_token');
+        $user->addHidden(['created_at', 'updated_at']);
     }
 
     $response = [
