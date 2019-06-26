@@ -3,22 +3,20 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: ./docker/nginx/dev.Dockerfile
+      dockerfile: ./docker/nginx/prod.Dockerfile
     depends_on:
       - app
     ports:
       - 80:80
-    volumes:
-      - .:/var/www/html
 
   app:
     build:
-      context: ./docker/php
-      dockerfile: ./docker/php/dev.Dockerfile
+      context: .
+      dockerfile: ./docker/php/prod.Dockerfile
     ports:
       - 9000:9000
     volumes:
-      - .:/var/www/html
+      - ./storage:/var/www/html/storage
 
   mysql:
     restart: always
