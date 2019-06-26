@@ -14,7 +14,3 @@
 Route::get('/', function () {
     return redirect(env('APP_FRONTEND_ORIGIN'));
 });
-
-Route::get('/auth/twitter', 'Auth\TwitterAuthController@redirectToProvider');
-Route::get('/auth/twitter/callback', 'Auth\TwitterAuthController@handleProviderCallback');
-Route::get('/auth/twitter/logout', 'Auth\TwitterAuthController@logout');

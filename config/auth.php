@@ -46,6 +46,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'stateful_api' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
 
     /*
