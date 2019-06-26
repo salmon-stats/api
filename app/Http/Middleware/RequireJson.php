@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class Cors
+class RequireJson
 {
     /**
      * Handle an incoming request.
@@ -15,8 +15,7 @@ class Cors
      */
     public function handle($request, Closure $next)
     {
-        return $next($request)
-            ->header('Access-Control-Allow-Origin', env('APP_FRONTEND_ORIGIN'))
-            ->header('Access-Control-Allow-Methods', 'GET');
+        $request->headers->set('Accept','application/json');
+        return $next($request);
     }
 }

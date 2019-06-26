@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+        \App\Http\Middleware\RequireJson::class,
     ];
 
     /**
@@ -28,30 +29,25 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \App\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            // \Illuminate\Session\Middleware\AuthenticateSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
         'api' => [
             'throttle:5,1',
             'bindings',
 
-            \App\Http\Middleware\Cors::class
+            \Spatie\Cors\Cors::class
         ],
 
         'stateful_api' => [
+            'throttle:10,1',
+
+            //\Spatie\Cors\Cors::class,
             \App\Http\Middleware\EncryptCookies::class,
-            \App\Http\Middleware\Cors::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            'throttle:10,1',
-            'bindings',
+            // \App\Http\Middleware\VerifyCsrfToken::class,
+            \Spatie\Cors\Cors::class,
         ],
     ];
 

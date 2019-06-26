@@ -73,8 +73,7 @@ class RouteServiceProvider extends ServiceProvider
 
     protected function mapStatefulApiRoutes()
     {
-        Route::prefix('api')
-             ->middleware('stateful_api')
+        Route::middleware('stateful_api')
              ->namespace($this->namespace)
              ->group(base_path('routes/statefulApi.php'));
     }

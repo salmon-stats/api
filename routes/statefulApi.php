@@ -11,6 +11,10 @@
 
 use Illuminate\Support\Facades\Request;
 
+Route::get('/auth/twitter', 'Auth\TwitterAuthController@redirectToProvider');
+Route::get('/auth/twitter/callback', 'Auth\TwitterAuthController@handleProviderCallback');
+Route::get('/auth/twitter/logout', 'Auth\TwitterAuthController@logout');
+
 Route::get('/metadata', function (Request $request) {
     $user = $request::user();
 
