@@ -60,8 +60,19 @@ class SalmonResultController extends Controller
 
         $job = $request->input('splatnet_json');
 
+        $jobPlayerId = $job['my_result']['pid'];
+        $associatedUser = \App\User::where('player_id', $jobPlayerId)
+            ->first();
+
+        if ($associatedUser && $user->id !== $associatedUser->id) {
+            abort(403, "Player `{$associatedUser->id}` is associated with different user.");
+        }
+        elseif ($user->player_id && $user->player_id !== $jobPlayerId) {
+            abort(403, 'You cannot upload different player\'s result.');
+        }
+
         try {
-            return DB::transaction(function () use ($job, $user) {
+            return DB::transaction(function () use ($job, $user, $jobPlayerId) {
                 $playerResults = array_merge([$job['my_result']], $job['other_results']);
                 usort($playerResults, function ($a, $b) { return $a['pid'] < $b['pid'] ? 1 : -1; });
 
@@ -168,6 +179,9 @@ class SalmonResultController extends Controller
                         }
                     }
                 }
+
+                $user->player_id = $jobPlayerId;
+                $user->save();
 
                 return response()->json(['salmon_result_id' => $createdSalmonResultId]);
             });
