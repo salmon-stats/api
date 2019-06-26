@@ -11,7 +11,7 @@ class UploadSalmonResultTest extends TestCase
 {
     private function getTestUser()
     {
-        return \App\User::findOrFail(1);
+        return factory(\App\User::class)->create();
     }
 
     private function getTestUserRequest()
