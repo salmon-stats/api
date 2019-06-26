@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('name')->unique();
             $table->playerId('player_id')->unique()->nullable();
             $table->unsignedBigInteger('twitter_id');
+            $table->string('twitter_avatar', 255)->nullable();
             $table->string('api_token', 64)->unique(); // SHA-256 hex
             $table->timestamps();
         });

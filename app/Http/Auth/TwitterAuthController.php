@@ -44,6 +44,7 @@ class TwitterAuthController extends Controller
             'twitter_id' => $twitterUser->id,
             // api_token must be unique; 256-bit hash won't practically collide.
             'api_token' => \App\Helpers\Helper::generateApiToken(),
+            'twitter_avatar' => $twitterUser->avatar_original,
         ]);
     }
 
