@@ -11,6 +11,7 @@ class SalmonResult extends Model
     protected $casts = [
         'members' => 'array',
     ];
+    protected $guarded = [];
 
     public function playerResults()
     {

@@ -11,11 +11,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
-            'name' => 'yukinkling2',
-            'twitter_id' => 1090304898594308097,
-            'player_id' => '2cf69d9715b323b7',
-            'api_token' => str_repeat('a', 64),
-        ]);
+        foreach (range(1, 10) as $i) {
+            factory(\App\User::class)->create();
+        }
     }
 }

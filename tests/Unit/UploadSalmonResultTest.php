@@ -3,15 +3,24 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-// use Illuminate\Foundation\Testing\WithFaker;
-// use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use Swaggest\JsonSchema\Schema;
-use App\Http\Controllers\SalmonResultController;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UploadSalmonResultTest extends TestCase
 {
+    private function getTestUser()
+    {
+        return factory(\App\User::class)->create();
+    }
+
+    private function getTestUserRequest($testUser = null)
+    {
+        return $this->actingAs(
+            $testUser ? $testUser : $this->getTestUser(),
+            'api'
+        );
+    }
+
     /**
      * @dataProvider resultJsonPathProvider
      * @doesNotPerformAssertions
@@ -35,47 +44,57 @@ class UploadSalmonResultTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider resultJsonPathProvider
-     */
-    public function testUploadSalmonResult($path)
+    public function testUploadRequiresAuth()
     {
-        $payload = [
-            // 'splatnet_json' => json_decode(file_get_contents($this->resultJsonPathProvider()[0][0]), true),
-            'splatnet_json' => json_decode(file_get_contents($path), true),
-        ];
-        $payload['splatnet_json']['play_time'] = \Carbon\Carbon::now()->timestamp;
-        $emptyRequest = \Illuminate\Http\Request::create('/api/upload-salmon-result', 'POST');
-        $validRequest = \Illuminate\Http\Request::create(
-            '/api/upload-salmon-result',
-            'POST',
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload),
+        $response = $this->postJson('/api/results');
+        $response->assertStatus(401);
+    }
+
+    public function testEmptyRequestIsInvalid()
+    {
+        $response = $this->getTestUserRequest()->postJson('/api/results', []);
+        $response->assertStatus(400);
+    }
+
+    public function testUploadSalmonResult()
+    {
+        $splatnetJson = json_decode(
+            file_get_contents($this->resultJsonPathProvider()[0][0]),
+            true
         );
-        $controller = new SalmonResultController;
+        $payload = ['splatnet_json' => $splatnetJson];
+        $payload['splatnet_json']['play_time'] = \Carbon\Carbon::now()->timestamp;
 
-        $successResponse = $controller->store($validRequest, 1);
-        $this->assertEquals(200, $successResponse->status());
-        $this->assertObjectHasAttribute('salmon_result_id', $successResponse->getData());
+        $testUser = $this->getTestUser();
+        $testUserRequest = $this->getTestUserRequest($testUser);
+        $successfulResponse = $testUserRequest->postJson('/api/results', $payload);
+        $successfulResponse
+            ->assertStatus(200)
+            ->assertJsonStructure(['salmon_result_id']);
 
-        try {
-            $controller->store($validRequest, 1);
-            $this->fail('Uploading same result twice should throw exception');
-        }
-        catch (HttpException $e) {
-            $this->assertEquals(409, $e->getStatusCode());
-        }
+        $this->assertEquals(
+            $splatnetJson['my_result']['pid'],
+            $testUser->player_id,
+            '$testUser->player_id should be updated',
+        );
 
-        try {
-            $controller->store($emptyRequest, 1);
-            $this->fail('Uploading empty result should throw exception');
-        }
-        catch (HttpException $e) {
-            $this->assertEquals(400, $e->getStatusCode());
-        }
+        // Uploading same result twice should be impossible
+        $failedResponse = $testUserRequest->postJson('/api/results', $payload);
+        $failedResponse->assertStatus(409);
+
+        // Once associated with player_id, you cannot upload result with different player_id
+        // Note that acutual player_id is always [a-f0-9]{16}
+        $payload2 = $payload;
+        $payload2['splatnet_json']['my_result']['pid'] = 'non-associated';
+        $failedResponse2 = $testUserRequest->postJson('/api/results', $payload2);
+        $failedResponse2->assertStatus(403);
+
+        // Only associated user can upload
+        $payload3 = $payload;
+        $anotherUser = $this->getTestUserRequest();
+        $payload3['splatnet_json']['play_time'] += 100;
+        $failedResponse3 = $anotherUser->postJson('/api/results', $payload3);
+        $failedResponse3->assertStatus(403);
     }
 
     public function resultJsonPathProvider()

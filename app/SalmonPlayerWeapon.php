@@ -10,4 +10,6 @@ class SalmonPlayerWeapon extends Model
 
     protected $table = 'salmon_player_weapons';
     protected $hidden = ['salmon_id', 'player_id', 'wave'];
+    protected $guarded = [];
+    public $timestamps = false;
 }

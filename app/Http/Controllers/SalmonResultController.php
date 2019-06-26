@@ -9,6 +9,7 @@ use Swaggest\JsonSchema\Schema;
 use App\Exceptions\SalmonResultAlreadyExistsException;
 use Illuminate\Support\Facades\Log;
 use function GuzzleHttp\json_decode;
+use App\SalmonResult;
 
 class SalmonResultController extends Controller
 {
@@ -40,8 +41,10 @@ class SalmonResultController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, int $uploaderUserId)
+    public function store(Request $request)
     {
+        $user = $request->user();
+
         $schema = Schema::import(json_decode(
             file_get_contents(base_path() . '/schemas/upload-salmon-result.json')
         ));
@@ -58,8 +61,19 @@ class SalmonResultController extends Controller
 
         $job = $request->input('splatnet_json');
 
+        $jobPlayerId = $job['my_result']['pid'];
+        $associatedUser = \App\User::where('player_id', $jobPlayerId)
+            ->first();
+
+        if ($associatedUser && $user->id !== $associatedUser->id) {
+            abort(403, "Player `{$associatedUser->id}` is associated with different user.");
+        }
+        elseif ($user->player_id && $user->player_id !== $jobPlayerId) {
+            abort(403, 'You cannot upload different player\'s result.');
+        }
+
         try {
-            return DB::transaction(function () use ($job, $uploaderUserId) {
+            return DB::transaction(function () use ($job, $user, $jobPlayerId) {
                 $playerResults = array_merge([$job['my_result']], $job['other_results']);
                 usort($playerResults, function ($a, $b) { return $a['pid'] < $b['pid'] ? 1 : -1; });
 
@@ -69,15 +83,16 @@ class SalmonResultController extends Controller
                 $failReason = $job['job_result']['failure_reason'];
                 $clearWaves = $failReason ? $job['job_result']['failure_wave'] : 3; // TODO: Don't use magic number
 
-                $existingSalmonResultId = DB::table('salmon_results')
-                    ->select('id')
-                    ->where('start_at', Carbon::parse($job['play_time']))
-                    ->whereJsonContains('members', $memberIds)
-                    ->first();
+                $existingSalmonResult =
+                    SalmonResult::where('start_at', Carbon::parse($job['play_time']))
+                        // Note: [1] can match with [1,2] but start_at makes it identical
+                        ->whereJsonContains('members', $memberIds)
+                        ->first();
 
-                if ($existingSalmonResultId) {
+                \Log::debug(SalmonResult::where('start_at', Carbon::parse($job['play_time']))->first());
+                if ($existingSalmonResult) {
                     throw new SalmonResultAlreadyExistsException(
-                        "Resource already exists. See /salmon-runs/{$existingSalmonResultId->id}"
+                        "Resource already exists. See /salmon-runs/{$existingSalmonResult->id}"
                     );
                 }
 
@@ -85,16 +100,18 @@ class SalmonResultController extends Controller
                     'key', $job['job_result']['failure_reason']
                 )->first();
 
-                $salmonResult = [
-                    'schedule_id' => Carbon::parse($job['start_time']),
-                    'start_at' => Carbon::parse($job['play_time']),
-                    'members' => json_encode($memberIds),
-                    'uploader_user_id' => $uploaderUserId,
-                    'clear_waves' => $clearWaves,
-                    'fail_reason_id' => $failReason ? $failReason->id : null,
-                    'danger_rate' => $job['danger_rate'],
-                ];
-                $createdSalmonResultId = DB::table('salmon_results')->insertGetId($salmonResult);
+                $salmonResult = new SalmonResult();
+                $salmonResult
+                    ->fill([
+                        'schedule_id' => Carbon::parse($job['start_time']),
+                        'start_at' => Carbon::parse($job['play_time']),
+                        'members' => $memberIds,
+                        'uploader_user_id' => $user->id,
+                        'clear_waves' => $clearWaves,
+                        'fail_reason_id' => $failReason ? $failReason->id : null,
+                        'danger_rate' => $job['danger_rate'],
+                    ])
+                    ->save();
 
                 $waveIndexes = range(0, $clearWaves === 0 ? 0 : $clearWaves - 1);
                 $waveDetails = $job['wave_details'];
@@ -111,8 +128,8 @@ class SalmonResultController extends Controller
                         'splatnet', $waveDetail['water_level']['key'],
                     )->first()->id;
 
-                    $salmonWave = [
-                        'salmon_id' => $createdSalmonResultId,
+                    $salmonWave = \App\SalmonWave::create([
+                        'salmon_id' => $salmonResult->id,
                         'wave' => $waveIndex,
                         'event_id' => $event ? $event->id : null,
                         'water_id' => $waterLevel,
@@ -120,54 +137,55 @@ class SalmonResultController extends Controller
                         'golden_egg_appearances' => $waveDetail['golden_ikura_pop_num'],
                         'golden_egg_delivered' => $waveDetail['golden_ikura_num'],
                         'power_egg_collected' => $waveDetail['ikura_num'],
-                    ];
-                    DB::table('salmon_waves')->insert($salmonWave);
+                    ]);
                 }
 
                 foreach ($playerResults as $playerResult) {
-                    $playerResultRow = [
-                        'salmon_id' => $createdSalmonResultId,
+                    \App\SalmonPlayerResult::create([
+                        'salmon_id' => $salmonResult->id,
                         'player_id' => $playerResult['pid'],
                         'golden_eggs' => $playerResult['golden_ikura_num'],
                         'power_eggs' => $playerResult['ikura_num'],
                         'rescue' => $playerResult['help_count'],
                         'death' => $playerResult['dead_count'],
                         'special_id' => (int) $playerResult['special']['id'],
-                    ];
-                    DB::table('salmon_player_results')->insert($playerResultRow);
+                    ]);
 
                     $bossKillCounts = array_map(function ($boss) {
                         return $boss['count'];
                     }, $playerResult['boss_kill_counts']);
 
-                    DB::table('salmon_player_boss_eliminations')->insert([
-                        'salmon_id' => $createdSalmonResultId,
+                    \App\SalmonPlayerBossElimination::create([
+                        'salmon_id' => $salmonResult->id,
                         'player_id' => $playerResult['pid'],
-                        'counts' => json_encode($bossKillCounts),
+                        'counts' => $bossKillCounts,
                     ]);
 
                     foreach ($waveIndexes as $waveIndex) {
                         try {
-                            DB::table('salmon_player_special_uses')->insert([
-                                'salmon_id' => $createdSalmonResultId,
+                            \App\SalmonPlayerSpecialUse::create([
+                                'salmon_id' => $salmonResult->id,
                                 'player_id' => $playerResult['pid'],
                                 'wave' => $waveIndex,
                                 'count' => $playerResult['special_counts'][$waveIndex],
                             ]);
 
-                            DB::table('salmon_player_weapons')->insert([
-                                'salmon_id' => $createdSalmonResultId,
+                            \App\SalmonPlayerWeapon::create([
+                                'salmon_id' => $salmonResult->id,
                                 'player_id' => $playerResult['pid'],
                                 'wave' => $waveIndex,
                                 'weapon_id' => (int) $playerResult['weapon_list'][$waveIndex]['id'],
                             ]);
                         } catch (\ErrorException $e) {
-                            // $waveIndex doesn't exist because player disconnected
+                            // ...[$waveIndex] doesn't exist because player disconnected
                         }
                     }
                 }
 
-                return response()->json(['salmon_result_id' => $createdSalmonResultId]);
+                $user->player_id = $jobPlayerId;
+                $user->save();
+
+                return response()->json(['salmon_result_id' => $salmonResult->id]);
             });
         }
         catch (SalmonResultAlreadyExistsException $e) {
@@ -186,7 +204,7 @@ class SalmonResultController extends Controller
      */
     public function show($salmonId)
     {
-        $salmonResult = \App\SalmonResult::where('id', $salmonId)
+        $salmonResult = SalmonResult::where('id', $salmonId)
             ->with(['playerResults', 'schedule', 'waves'])
             ->firstOrFail();
 
