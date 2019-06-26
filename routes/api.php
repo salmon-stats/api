@@ -19,8 +19,5 @@ Route::get('/results/{id}', 'SalmonResultController@show');
 
 // Endpoints requires authentication
 Route::group(['middleware' => ['auth:api']], function () {
-    Route::post('/results', function (Request $request) {
-        $controller = new SalmonResultController;
-        $controller->store($request, \Auth::user()->id);
-    });
+    Route::post('/results', 'SalmonResultController@store');
 });

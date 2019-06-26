@@ -40,8 +40,10 @@ class SalmonResultController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, int $uploaderUserId)
+    public function store(Request $request)
     {
+        $user = $request->user();
+
         $schema = Schema::import(json_decode(
             file_get_contents(base_path() . '/schemas/upload-salmon-result.json')
         ));
@@ -59,7 +61,7 @@ class SalmonResultController extends Controller
         $job = $request->input('splatnet_json');
 
         try {
-            return DB::transaction(function () use ($job, $uploaderUserId) {
+            return DB::transaction(function () use ($job, $user) {
                 $playerResults = array_merge([$job['my_result']], $job['other_results']);
                 usort($playerResults, function ($a, $b) { return $a['pid'] < $b['pid'] ? 1 : -1; });
 
@@ -89,7 +91,7 @@ class SalmonResultController extends Controller
                     'schedule_id' => Carbon::parse($job['start_time']),
                     'start_at' => Carbon::parse($job['play_time']),
                     'members' => json_encode($memberIds),
-                    'uploader_user_id' => $uploaderUserId,
+                    'uploader_user_id' => $user->id,
                     'clear_waves' => $clearWaves,
                     'fail_reason_id' => $failReason ? $failReason->id : null,
                     'danger_rate' => $job['danger_rate'],
