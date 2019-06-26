@@ -3,15 +3,22 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-// use Illuminate\Foundation\Testing\WithFaker;
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use Swaggest\JsonSchema\Schema;
-use App\Http\Controllers\SalmonResultController;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UploadSalmonResultTest extends TestCase
 {
+    private function getTestUser()
+    {
+        return \App\User::findOrFail(1);
+    }
+
+    private function getTestUserRequest()
+    {
+        return $this->actingAs($this->getTestUser(), 'api');
+    }
+
     /**
      * @dataProvider resultJsonPathProvider
      * @doesNotPerformAssertions
@@ -35,47 +42,37 @@ class UploadSalmonResultTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider resultJsonPathProvider
-     */
-    public function testUploadSalmonResult($path)
+    public function testUploadRequiresAuth()
+    {
+        $response = $this->postJson('/api/results');
+        $response->assertStatus(401);
+    }
+
+    public function testEmptyRequestIsInvalid()
+    {
+        $response = $this->getTestUserRequest()->postJson('/api/results', []);
+        $response->assertStatus(400);
+    }
+
+    public function testUploadSalmonResult()
     {
         $payload = [
-            // 'splatnet_json' => json_decode(file_get_contents($this->resultJsonPathProvider()[0][0]), true),
-            'splatnet_json' => json_decode(file_get_contents($path), true),
+            'splatnet_json' => json_decode(
+                file_get_contents($this->resultJsonPathProvider()[0][0]),
+                true
+            ),
         ];
         $payload['splatnet_json']['play_time'] = \Carbon\Carbon::now()->timestamp;
-        $emptyRequest = \Illuminate\Http\Request::create('/api/upload-salmon-result', 'POST');
-        $validRequest = \Illuminate\Http\Request::create(
-            '/api/upload-salmon-result',
-            'POST',
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload),
-        );
-        $controller = new SalmonResultController;
 
-        $successResponse = $controller->store($validRequest, 1);
-        $this->assertEquals(200, $successResponse->status());
-        $this->assertObjectHasAttribute('salmon_result_id', $successResponse->getData());
+        $testUserRequest = $this->getTestUserRequest();
+        $successfulResponse = $testUserRequest->postJson('/api/results', $payload);
+        $successfulResponse
+            ->assertStatus(200)
+            ->assertJsonStructure(['salmon_result_id']);
 
-        try {
-            $controller->store($validRequest, 1);
-            $this->fail('Uploading same result twice should throw exception');
-        }
-        catch (HttpException $e) {
-            $this->assertEquals(409, $e->getStatusCode());
-        }
-
-        try {
-            $controller->store($emptyRequest, 1);
-            $this->fail('Uploading empty result should throw exception');
-        }
-        catch (HttpException $e) {
-            $this->assertEquals(400, $e->getStatusCode());
-        }
+        // Uploading same result twice should be impossible
+        $failedResponse = $testUserRequest->postJson('/api/results', $payload);
+        $failedResponse->assertStatus(409);
     }
 
     public function resultJsonPathProvider()
