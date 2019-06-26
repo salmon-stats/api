@@ -11,6 +11,8 @@ class SalmonPlayerResult extends Model
 
     protected $table = 'salmon_player_results';
     protected $hidden = ['salmon_id'];
+    protected $guarded = [];
+    public $timestamps = false;
 
     public function bossEliminations()
     {

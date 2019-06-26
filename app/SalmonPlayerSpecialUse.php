@@ -13,4 +13,6 @@ class SalmonPlayerSpecialUse extends Model
     protected $casts = [
         'counts' => 'array',
     ];
+    protected $guarded = [];
+    public $timestamps = false;
 }

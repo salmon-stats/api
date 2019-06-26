@@ -13,4 +13,6 @@ class SalmonPlayerBossElimination extends Model
     protected $casts = [
         'counts' => 'object',
     ];
+    protected $guarded = [];
+    public $timestamps = false;
 }

@@ -3,14 +3,11 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use Swaggest\JsonSchema\Schema;
 
 class UploadSalmonResultTest extends TestCase
 {
-    use RefreshDatabase;
-
     private function getTestUser()
     {
         return factory(\App\User::class)->create();

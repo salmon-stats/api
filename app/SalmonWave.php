@@ -7,6 +7,8 @@ class SalmonWave extends Model
 {
     protected $table = 'salmon_waves';
     protected $hidden = ['salmon_id', 'event_id', 'water_id'];
+    protected $guarded = [];
+    public $timestamps = false;
 
     public function event()
     {
