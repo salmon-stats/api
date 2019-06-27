@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\SalmonResultController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +15,8 @@ use App\Http\Controllers\SalmonResultController;
 
 // Public endpoints
 Route::get('/results/{id}', 'SalmonResultController@show');
+
+Route::get('/players/{player_id}', 'SalmonResultController@index')->name('player/summary');
 
 // Endpoints requires authentication
 Route::group(['middleware' => ['auth:api']], function () {

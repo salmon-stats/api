@@ -16,11 +16,13 @@ class SalmonResultController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string $playerId
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, string $playerId)
     {
-        //
+        return SalmonResult::whereJsonContains('members', $playerId)->paginate(20);
     }
 
     /**
