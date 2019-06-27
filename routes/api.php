@@ -21,4 +21,14 @@ Route::get('/players/{player_id}', 'SalmonResultController@index')->name('player
 // Endpoints requires authentication
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/results', 'SalmonResultController@store');
+
+    Route::get('/users/my', function (Request $request) {
+        $user = $request->user();
+
+        if (!$user->player_id) {
+            abort(404, 'You don\'t have uploaded results yet.');
+        }
+
+        return redirect()->route('player/summary', [$user->player_id]);
+    });
 });
