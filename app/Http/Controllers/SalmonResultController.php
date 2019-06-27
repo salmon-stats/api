@@ -13,6 +13,13 @@ use App\SalmonResult;
 
 class SalmonResultController extends Controller
 {
+    protected $rowsPerPage = 20;
+
+    public function setRowsPerPage(int $rowsPerPage)
+    {
+        $this->rowsPerPage = $rowsPerPage;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -22,7 +29,7 @@ class SalmonResultController extends Controller
      */
     public function index(Request $request, string $playerId)
     {
-        return SalmonResult::whereJsonContains('members', $playerId)->paginate(20);
+        return SalmonResult::whereJsonContains('members', $playerId)->paginate($this->rowsPerPage);
     }
 
     /**
