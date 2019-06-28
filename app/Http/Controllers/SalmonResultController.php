@@ -29,7 +29,9 @@ class SalmonResultController extends Controller
      */
     public function index(Request $request, string $playerId)
     {
-        return SalmonResult::whereJsonContains('members', $playerId)->paginate($this->rowsPerPage);
+        return SalmonResult::whereJsonContains('members', $playerId)
+            ->orderBy('start_at', 'desc')
+            ->paginate($this->rowsPerPage);
     }
 
     /**
