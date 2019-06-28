@@ -84,7 +84,7 @@ class SalmonResultController extends Controller
         try {
             return DB::transaction(function () use ($job, $user, $jobPlayerId) {
                 $playerResults = array_merge([$job['my_result']], $job['other_results']);
-                usort($playerResults, function ($a, $b) { return $a['pid'] < $b['pid'] ? 1 : -1; });
+                usort($playerResults, function ($a, $b) { return $a['pid'] > $b['pid'] ? 1 : -1; });
 
                 $memberIds = array_map(function ($playerResult) {
                     return $playerResult['pid'];
