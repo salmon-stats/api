@@ -29,6 +29,10 @@ Route::get('/metadata', function (Request $request) {
     return $response;
 });
 
+Route::post('/upload-results', function (Request $request) {
+    return [1];
+});
+
 Route::get('/api-token', function (Request $request) {
     $user = $request::user();
 

@@ -74,7 +74,11 @@ class UploadSalmonResultTest extends TestCase
         $successfulResponse = $testUserRequest->postJson('/api/results', $payload);
         $successfulResponse
             ->assertStatus(200)
-            ->assertJsonStructure(['salmon_result_id']);
+            ->assertJson([
+                [
+                    'created' => true,
+                ],
+            ]);
 
         $this->assertEquals(
             $splatnetJson['my_result']['pid'],
@@ -84,7 +88,12 @@ class UploadSalmonResultTest extends TestCase
 
         // Uploading same result twice should be impossible
         $failedResponse = $testUserRequest->postJson('/api/results', $payload);
-        $failedResponse->assertStatus(409);
+        $failedResponse->assertStatus(200)
+            ->assertJson([
+                [
+                    'created' => false,
+                ],
+            ]);
 
         // Once associated with player_id, you cannot upload result with different player_id
         // Note that acutual player_id is always [a-f0-9]{16}
