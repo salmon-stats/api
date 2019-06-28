@@ -29,9 +29,7 @@ Route::get('/metadata', function (Request $request) {
     return $response;
 });
 
-Route::post('/upload-results', function (Request $request) {
-    return [1];
-});
+Route::post('/upload-results', 'SalmonResultController@store');
 
 Route::get('/api-token', function (Request $request) {
     $user = $request::user();
