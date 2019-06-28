@@ -670,6 +670,8 @@
         "results": {
             "type": "array",
             "items": {
+                "minItems": 1,
+                "maxItems": 10,
                 "$ref": "#/definitions/SalmonRunResult"
             }
         }
