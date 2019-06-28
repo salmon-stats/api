@@ -98,10 +98,9 @@ class SalmonResultController extends Controller
                         ->whereJsonContains('members', $memberIds)
                         ->first();
 
-                \Log::debug(SalmonResult::where('start_at', Carbon::parse($job['play_time']))->first());
                 if ($existingSalmonResult) {
                     throw new SalmonResultAlreadyExistsException(
-                        "Resource already exists. See /salmon-runs/{$existingSalmonResult->id}"
+                        "Resource already exists. See /results/{$existingSalmonResult->id}"
                     );
                 }
 
@@ -142,7 +141,7 @@ class SalmonResultController extends Controller
                         'splatnet', $waveDetail['water_level']['key'],
                     )->first()->id;
 
-                    $salmonWave = \App\SalmonWave::create([
+                    \App\SalmonWave::create([
                         'salmon_id' => $salmonResult->id,
                         'wave' => $waveIndex,
                         'event_id' => $event ? $event->id : null,
