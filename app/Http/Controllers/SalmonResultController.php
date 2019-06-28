@@ -70,7 +70,7 @@ class SalmonResultController extends Controller
             abort(400, $e->getMessage());
         }
 
-        $job = $request->input('splatnet_json');
+        $job = $request->input('results')[0];
 
         $jobPlayerId = $job['my_result']['pid'];
         $associatedUser = \App\User::where('player_id', $jobPlayerId)

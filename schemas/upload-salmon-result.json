@@ -667,11 +667,14 @@
 
     "type": "object",
     "properties": {
-        "splatnet_json": {
-            "$ref": "#/definitions/SalmonRunResult"
+        "results": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/SalmonRunResult"
+            }
         }
     },
     "required": [
-        "splatnet_json"
+        "results"
     ]
 }
