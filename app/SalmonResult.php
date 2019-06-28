@@ -10,6 +10,7 @@ class SalmonResult extends Model
     protected $hidden = [];
     protected $casts = [
         'members' => 'array',
+        'boss_appearances' => 'object',
     ];
     protected $guarded = [];
 

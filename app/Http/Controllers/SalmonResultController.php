@@ -109,12 +109,17 @@ class SalmonResultController extends Controller
                     'key', $job['job_result']['failure_reason']
                 )->first();
 
+                $bossAppearances = array_map(function ($boss) {
+                    return $boss['count'];
+                }, $job['boss_counts']);
+
                 $salmonResult = new SalmonResult();
                 $salmonResult
                     ->fill([
                         'schedule_id' => Carbon::parse($job['start_time']),
                         'start_at' => Carbon::parse($job['play_time']),
                         'members' => $memberIds,
+                        'boss_appearances' => $bossAppearances,
                         'uploader_user_id' => $user->id,
                         'clear_waves' => $clearWaves,
                         'fail_reason_id' => $failReason ? $failReason->id : null,

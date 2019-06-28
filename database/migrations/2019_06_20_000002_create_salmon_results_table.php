@@ -32,6 +32,7 @@ class CreateSalmonResultsTable extends Migration
             $table->dateTime('schedule_id');
             $table->dateTime('start_at');
             $table->json('members'); // array of pids
+            $table->json('boss_appearances');
             $table->unsignedBigInteger('uploader_user_id');
             $table->unsignedTinyInteger('clear_waves');
             $table->unsignedTinyInteger('fail_reason_id')->nullable();
