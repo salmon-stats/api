@@ -13,12 +13,19 @@ class SalmonResult extends Model
         'boss_appearances' => 'object',
     ];
     protected $guarded = [];
+    protected $appends = ['member_accounts'];
 
     public function playerResults()
     {
         return $this
             ->hasMany('App\SalmonPlayerResult', 'salmon_id')
             ->with(['bossEliminations', 'specialUses', 'weapons']);
+    }
+
+    public function getMemberAccountsAttribute() {
+        return collect($this->members)->map(function ($playerId) {
+            return \App\User::where('player_id', $playerId)->first();
+        });
     }
 
     public function schedule()
