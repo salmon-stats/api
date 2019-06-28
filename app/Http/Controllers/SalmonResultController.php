@@ -143,7 +143,7 @@ class SalmonResultController extends Controller
 
                     \App\SalmonWave::create([
                         'salmon_id' => $salmonResult->id,
-                        'wave' => $waveIndex,
+                        'wave' => $waveIndex + 1,
                         'event_id' => $event ? $event->id : null,
                         'water_id' => $waterLevel,
                         'golden_egg_quota' => $waveDetail['quota_num'],
