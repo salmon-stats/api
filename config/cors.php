@@ -25,12 +25,14 @@ return [
 
         'allow_methods' => [
             'GET',
+            'POST',
             'OPTIONS',
         ],
 
         'allow_headers' => [
             'Content-Type',
             'X-Auth-Token',
+            'X-Xsrf-Token',
             'Origin',
             'Authorization',
         ],
