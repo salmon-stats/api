@@ -35,7 +35,7 @@ class UploadSalmonResultTest extends TestCase
         try {
             $salmon_result = json_decode(file_get_contents($path));
             $data = new \stdClass();
-            $data->splatnet_json = $salmon_result;
+            $data->results = [$salmon_result];
 
             $schema->in($data);
         }
@@ -58,19 +58,27 @@ class UploadSalmonResultTest extends TestCase
 
     public function testUploadSalmonResult()
     {
+        $testUser = $this->getTestUser();
+        $testUserRequest = $this->getTestUserRequest($testUser);
+
         $splatnetJson = json_decode(
             file_get_contents($this->resultJsonPathProvider()[0][0]),
             true
         );
-        $payload = ['splatnet_json' => $splatnetJson];
-        $payload['splatnet_json']['play_time'] = \Carbon\Carbon::now()->timestamp;
 
-        $testUser = $this->getTestUser();
-        $testUserRequest = $this->getTestUserRequest($testUser);
+        $splatnetJson['play_time'] = \Carbon\Carbon::now()->timestamp;
+        $splatnetJson['my_result']['pid'] = $testUser->player_id;
+
+        $payload = ['results' => [$splatnetJson]];
+
         $successfulResponse = $testUserRequest->postJson('/api/results', $payload);
         $successfulResponse
             ->assertStatus(200)
-            ->assertJsonStructure(['salmon_result_id']);
+            ->assertJson([
+                [
+                    'created' => true,
+                ],
+            ]);
 
         $this->assertEquals(
             $splatnetJson['my_result']['pid'],
@@ -80,19 +88,24 @@ class UploadSalmonResultTest extends TestCase
 
         // Uploading same result twice should be impossible
         $failedResponse = $testUserRequest->postJson('/api/results', $payload);
-        $failedResponse->assertStatus(409);
+        $failedResponse->assertStatus(200)
+            ->assertJson([
+                [
+                    'created' => false,
+                ],
+            ]);
 
         // Once associated with player_id, you cannot upload result with different player_id
         // Note that acutual player_id is always [a-f0-9]{16}
         $payload2 = $payload;
-        $payload2['splatnet_json']['my_result']['pid'] = 'non-associated';
+        $payload2['results'][0]['my_result']['pid'] = 'non-associated';
         $failedResponse2 = $testUserRequest->postJson('/api/results', $payload2);
         $failedResponse2->assertStatus(403);
 
         // Only associated user can upload
         $payload3 = $payload;
         $anotherUser = $this->getTestUserRequest();
-        $payload3['splatnet_json']['play_time'] += 100;
+        $payload3['results'][0]['play_time'] += 100;
         $failedResponse3 = $anotherUser->postJson('/api/results', $payload3);
         $failedResponse3->assertStatus(403);
     }
