@@ -56,7 +56,7 @@ class SalmonResultController extends Controller
                 return $playerResult['pid'];
             }, $playerResults);
             $failReason = $job['job_result']['failure_reason'];
-            $clearWaves = $failReason ? $job['job_result']['failure_wave'] : 3; // TODO: Don't use magic number
+            $clearWaves = $failReason ? $job['job_result']['failure_wave'] - 1 : 3; // TODO: Don't use magic number
 
             $existingSalmonResult =
                 SalmonResult::where('start_at', Carbon::parse($job['play_time']))
