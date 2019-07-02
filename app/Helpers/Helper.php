@@ -10,4 +10,13 @@ class Helper
 
         return hash('sha256', $token);
     }
+
+    public static function makeIdTokeyMap ($rows)
+    {
+        $result = new \stdClass();
+        foreach ($rows as $row) {
+            $result->{$row->id} = $row->key;
+        }
+        return $result;
+    }
 }

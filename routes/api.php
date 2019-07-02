@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\SalmonResult;
 use App\Http\Controllers\SalmonResultController;
 use App\User;
+use App\Helpers\Helper;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,39 @@ use App\User;
  * Public endpoints
  */
 Route::get('/results/{id}', 'SalmonResultController@show');
+
+Route::get('/id-key-map', function () {
+    $bosses = Helper::makeIdTokeyMap(
+        \App\SalmonBoss::get()
+    );
+    $events = Helper::makeIdTokeyMap(
+        \App\SalmonEvent::get()
+    );
+    $failReasons = Helper::makeIdTokeyMap(
+        \App\SalmonFailReason::get()
+    );
+    $waterLevels = Helper::makeIdTokeyMap(
+        \App\SalmonWaterLevel::get()
+    );
+    $specials = Helper::makeIdTokeyMap(
+        \App\SalmonSpecial::get()
+    );
+    $stages = Helper::makeIdTokeyMap(
+        \App\SalmonStage::get()
+    );
+    $weapons = Helper::makeIdTokeyMap(
+        \App\SalmonWeapon::get()
+    );
+    return [
+        'boss' => $bosses,
+        'event' => $events,
+        'fail_reason' => $failReasons,
+        'special' => $specials,
+        'stage' => $stages,
+        'water_level' => $waterLevels,
+        'weapon' => $weapons,
+    ];
+});
 
 // player routes
 Route::get('/players/{player_id}', function (Request $request, $playerId) {

@@ -4,8 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SalmonEvent extends Model
+class SalmonStage extends Model
 {
-    protected $table = 'salmon_events';
+    protected $table = 'salmon_stages';
     protected $hidden = [];
 }
