@@ -16,19 +16,17 @@ class CreateSalmonPlayerResultsTable extends Migration
         Schema::create('salmon_specials', function (Blueprint $table) {
             $table->unsignedTinyInteger('id')->primary();
             $table->statInkKey('key');
-            $table->string('name', 32);
         });
         $specials = [
-            [2, 'pitcher', 'Bomb Launcher'],
-            [7, 'presser', 'Sting Ray'],
-            [8, 'jetpack', 'Inkjet'],
-            [9, 'chakuchi', 'Splashdown'],
+            [2, 'pitcher'],
+            [7, 'presser'],
+            [8, 'jetpack'],
+            [9, 'chakuchi'],
         ];
         foreach ($specials as $special) {
             DB::table('salmon_specials')->insert([
                 'id' => $special[0],
                 'key' => $special[1],
-                'name' => $special[2],
             ]);
         }
 
