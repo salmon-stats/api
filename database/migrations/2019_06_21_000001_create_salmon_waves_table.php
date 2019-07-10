@@ -61,9 +61,9 @@ class CreateSalmonWavesTable extends Migration
             $table->unsignedSmallInteger('power_egg_collected')->integer()->null();
 
             $table->primary(['salmon_id', 'wave']);
-            $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            $table->foreign('event_id')->references('id')->on('salmon_events');
-            $table->foreign('water_id')->references('id')->on('salmon_water_levels');
+            $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');
+            $table->foreign('event_id')->references('id')->on('salmon_events')->onDelete('cascade');
+            $table->foreign('water_id')->references('id')->on('salmon_water_levels')->onDelete('cascade');
         });
     }
 

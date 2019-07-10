@@ -39,9 +39,9 @@ class CreateSalmonResultsTable extends Migration
             $table->decimal('danger_rate', 4, 1);
             $table->timestamps();
 
-            $table->foreign('schedule_id')->references('schedule_id')->on('salmon_schedules');
-            $table->foreign('uploader_user_id')->references('id')->on('users');
-            $table->foreign('fail_reason_id')->references('id')->on('salmon_fail_reasons');
+            $table->foreign('schedule_id')->references('schedule_id')->on('salmon_schedules')->onDelete('cascade');
+            $table->foreign('uploader_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('fail_reason_id')->references('id')->on('salmon_fail_reasons')->onDelete('cascade');
         });
     }
 

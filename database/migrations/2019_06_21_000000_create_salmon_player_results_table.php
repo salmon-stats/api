@@ -40,9 +40,9 @@ class CreateSalmonPlayerResultsTable extends Migration
             $table->unsignedTinyInteger('special_id');
 
             $table->primary(['salmon_id', 'player_id']);
-            $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            // $table->foreign('player_id')->references('player_id')->on('users');
-            $table->foreign('special_id')->references('id')->on('salmon_specials');
+            $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');
+            // $table->foreign('player_id')->references('player_id')->on('users')->onDelete('cascade');
+            $table->foreign('special_id')->references('id')->on('salmon_specials')->onDelete('cascade');
         });
 
         Schema::create('salmon_player_special_uses', function (Blueprint $table) {
@@ -52,8 +52,8 @@ class CreateSalmonPlayerResultsTable extends Migration
             $table->unsignedTinyInteger('count');
 
             $table->primary(['salmon_id', 'player_id', 'wave']);
-            $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            // $table->foreign('player_id')->references('player_id')->on('users');
+            $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');
+            // $table->foreign('player_id')->references('player_id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('salmon_player_boss_eliminations', function (Blueprint $table) {
@@ -62,8 +62,8 @@ class CreateSalmonPlayerResultsTable extends Migration
             $table->json('counts');
 
             $table->primary(['salmon_id', 'player_id'], 'salmon_player_boss_eliminations_pk');
-            $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            // $table->foreign('player_id')->references('player_id')->on('users');
+            $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');
+            // $table->foreign('player_id')->references('player_id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('salmon_player_weapons', function (Blueprint $table) {
@@ -73,9 +73,9 @@ class CreateSalmonPlayerResultsTable extends Migration
             $table->smallInteger('weapon_id');
 
             $table->primary(['salmon_id', 'player_id', 'wave']);
-            $table->foreign('salmon_id')->references('id')->on('salmon_results');
-            // $table->foreign('player_id')->references('player_id')->on('users');
-            $table->foreign('weapon_id')->references('id')->on('salmon_weapons');
+            $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');
+            // $table->foreign('player_id')->references('player_id')->on('users')->onDelete('cascade');
+            $table->foreign('weapon_id')->references('id')->on('salmon_weapons')->onDelete('cascade');
         });
     }
 

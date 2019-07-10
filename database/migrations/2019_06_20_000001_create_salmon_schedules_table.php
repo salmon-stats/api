@@ -25,8 +25,8 @@ class CreateSalmonSchedulesTable extends Migration
                 $table->unsignedTinyInteger('stage_id');
                 $table->unsignedSmallInteger('rare_weapon_id')->nullable();
 
-                $table->foreign('stage_id')->references('id')->on('salmon_stages');
-                // $table->foreign('rare_weapon_id')->references('id')->on('salmon_weapons');
+                $table->foreign('stage_id')->references('id')->on('salmon_stages')->onDelete('cascade');
+                // $table->foreign('rare_weapon_id')->references('id')->on('salmon_weapons')->onDelete('cascade');
             });
 
             $stageJapaneseNames = [
