@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 class SalmonWave extends Model
 {
     protected $table = 'salmon_waves';
-    protected $hidden = ['salmon_id', 'event_id', 'water_id'];
+    protected $hidden = ['salmon_id'];
+    // protected $hidden = ['salmon_id', 'event_id', 'water_id'];
     protected $guarded = [];
     public $timestamps = false;
 

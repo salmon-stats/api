@@ -38,7 +38,7 @@ class SalmonResult extends Model
     {
         return $this
             ->hasMany('App\SalmonWave', 'salmon_id')
-            ->with(['event', 'water'])
+            // ->with(['event', 'water'])
             ->orderBy('wave');
     }
 }
