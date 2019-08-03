@@ -18,4 +18,14 @@ class User extends Authenticatable
     protected $hidden = [
         'api_token', 'twitter_id',
     ];
+
+    /**
+     * Returns player page if the user has uploaded result at least once.
+     * Otherwise returns null.
+     */
+    public function getPlayerPage()
+    {
+        if ($this->player_id) return env('APP_FRONTEND_ORIGIN') . "/players/{$this->player_id}";
+        return null;
+    }
 }

@@ -28,11 +28,7 @@ class TwitterAuthController extends Controller
 
         Auth::login($authUser, true);
 
-        $redirectTo = env('APP_FRONTEND_ORIGIN');
-        if ($authUser) { // User has uploaded results
-            $redirectTo .= "/players/{$authUser->player_id}";
-        }
-        return redirect()->to($redirectTo);
+        return redirect($authUser->getPlayerPage() ?? env('APP_FRONTEND_ORIGIN'));
     }
 
     private function findOrCreateUser($twitterUser)

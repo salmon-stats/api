@@ -19,7 +19,7 @@ class RedirectIfAuthenticated
     {
         if (Auth::guard($guard)->check()) {
             $user = Auth::user();
-            return redirect(env('APP_FRONTEND_ORIGIN') . "/users/{$user->id}");
+            return redirect($user->getPlayerPage() ?? env('APP_FRONTEND_ORIGIN'));
         }
 
         return $next($request);
