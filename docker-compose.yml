@@ -14,7 +14,7 @@ services:
   app:
     build:
       context: ./docker/php
-      dockerfile: ./docker/php/dev.Dockerfile
+      dockerfile: dev.Dockerfile
     ports:
       - 9000:9000
     volumes:
