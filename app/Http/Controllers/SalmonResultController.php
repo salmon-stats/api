@@ -22,7 +22,7 @@ class SalmonResultController extends Controller
      */
     public function index(Request $request, IndexResultUsecase $usecase)
     {
-        return $usecase($request->player_id);
+        return $usecase($request->player_id, $request->schedule_id);
     }
 
     /**
