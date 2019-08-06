@@ -9,16 +9,10 @@ use Swaggest\JsonSchema\Schema;
 use Illuminate\Support\Facades\Log;
 use function GuzzleHttp\json_decode;
 use App\SalmonResult;
+use App\UseCases\IndexResultUsecase;
 
 class SalmonResultController extends Controller
 {
-    protected $rowsPerPage = 20;
-
-    public function setRowsPerPage(int $rowsPerPage)
-    {
-        $this->rowsPerPage = $rowsPerPage;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -26,11 +20,9 @@ class SalmonResultController extends Controller
      * @param  string $playerId
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, string $playerId)
+    public function index(Request $request, IndexResultUsecase $usecase)
     {
-        return SalmonResult::whereJsonContains('members', $playerId)
-            ->orderBy('start_at', 'desc')
-            ->paginate($this->rowsPerPage);
+        return $usecase($request->player_id);
     }
 
     /**
