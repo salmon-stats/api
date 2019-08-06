@@ -13,7 +13,6 @@ class SalmonResult extends Model
         'boss_appearances' => 'object',
     ];
     protected $guarded = [];
-    protected $appends = ['member_accounts'];
 
     public function playerResults()
     {

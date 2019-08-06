@@ -224,7 +224,8 @@ class SalmonResultController extends Controller
     {
         $salmonResult = SalmonResult::where('id', $salmonId)
             ->with(['playerResults', 'schedule', 'waves'])
-            ->firstOrFail();
+            ->firstOrFail()
+            ->append('member_accounts');
 
         return $salmonResult;
     }

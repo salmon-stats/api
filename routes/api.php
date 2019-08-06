@@ -22,7 +22,7 @@ use App\Helpers\Helper;
  */
 Route::get('/results', 'SalmonResultController@index', 'results.index');
 
-Route::get('/results/{id}', 'SalmonResultController@show');
+Route::get('/results/{id}', 'SalmonResultController@show', 'results.show');
 
 Route::get('/id-key-map', function () {
     $bosses = Helper::makeIdTokeyMap(
