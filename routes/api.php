@@ -67,9 +67,7 @@ Route::get('/players/{player_id}', function (Request $request, $playerId) {
 
     $user = User::where('player_id', $playerId)->first();
 
-    $resultController = new SalmonResultController();
-    $resultController->setRowsPerPage(10);
-    $results = $resultController->index($request, $playerId);
+    $results = \App::call('App\Http\Controllers\SalmonResultController@index');
     $resultsWithoutPagination = $results->toArray()['data'];
 
     return [
