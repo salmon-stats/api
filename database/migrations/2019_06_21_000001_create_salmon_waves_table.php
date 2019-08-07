@@ -14,22 +14,24 @@ class CreateSalmonWavesTable extends Migration
     public function up()
     {
         Schema::create('salmon_events', function (Blueprint $table) {
-            $table->tinyIncrements('id');
+            $table->unsignedTinyInteger('id')->primary();
             $table->statInkKey('key');
             $table->string('splatnet', 32);
         });
         $salmonEvents = [
-            ['cohock_charge', 'cohock-charge'],
-            ['fog', 'fog'],
-            ['goldie_seeking', 'goldie-seeking'],
-            ['griller', 'griller'],
-            ['mothership', 'the-mothership'],
-            ['rush', 'rush'],
+            [0, 'no_event', 'water-levels'],
+            [1, 'cohock_charge', 'cohock-charge'],
+            [2, 'fog', 'fog'],
+            [3, 'goldie_seeking', 'goldie-seeking'],
+            [4, 'griller', 'griller'],
+            [5, 'mothership', 'the-mothership'],
+            [6, 'rush', 'rush'],
         ];
         foreach ($salmonEvents as $salmonEvent) {
             DB::table('salmon_events')->insert([
-                'key' => $salmonEvent[0],
-                'splatnet' => $salmonEvent[1],
+                'id' => $salmonEvent[0],
+                'key' => $salmonEvent[1],
+                'splatnet' => $salmonEvent[2],
             ]);
         }
 
@@ -53,7 +55,7 @@ class CreateSalmonWavesTable extends Migration
         Schema::create('salmon_waves', function (Blueprint $table) {
             $table->unsignedBigInteger('salmon_id');
             $table->unsignedTinyInteger('wave');
-            $table->unsignedTinyInteger('event_id')->nullable();
+            $table->unsignedTinyInteger('event_id');
             $table->unsignedTinyInteger('water_id');
             $table->unsignedSmallInteger('golden_egg_quota')->integer()->null();
             $table->unsignedSmallInteger('golden_egg_appearances')->integer()->null();

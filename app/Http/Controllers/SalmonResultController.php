@@ -93,19 +93,18 @@ class SalmonResultController extends Controller
                 // You don't have to validate event_type and water_level
                 // because it's already done by json schema.
 
-                // $event = null if key is 'water-levels'
-                $event = \App\SalmonEvent::where(
+                $eventId = \App\SalmonEvent::where(
                     'splatnet', $waveDetail['event_type']['key']
-                )->first();
-                $waterLevel = \App\SalmonWaterLevel::where(
+                )->first()->id;
+                $waterLevelId = \App\SalmonWaterLevel::where(
                     'splatnet', $waveDetail['water_level']['key'],
                 )->first()->id;
 
                 \App\SalmonWave::create([
                     'salmon_id' => $salmonResult->id,
                     'wave' => $waveIndex + 1,
-                    'event_id' => $event ? $event->id : null,
-                    'water_id' => $waterLevel,
+                    'event_id' => $eventId,
+                    'water_id' => $waterLevelId,
                     'golden_egg_quota' => $waveDetail['quota_num'],
                     'golden_egg_appearances' => $waveDetail['golden_ikura_pop_num'],
                     'golden_egg_delivered' => $waveDetail['golden_ikura_num'],

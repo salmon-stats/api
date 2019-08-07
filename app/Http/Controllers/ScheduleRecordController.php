@@ -80,7 +80,7 @@ records AS (
     SELECT
             id,
             wave_results.water_id,
-            CASE WHEN wave_results.event_id IS NULL THEN 0 ELSE wave_results.event_id END AS event_id,
+            wave_results.event_id AS event_id,
             $query[0] AS $query[1],
             ROW_NUMBER() OVER (PARTITION BY wave_results.water_id, wave_results.event_id ORDER BY $query[0] DESC) AS row_num
         FROM water_x_event
