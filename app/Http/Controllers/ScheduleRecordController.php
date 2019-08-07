@@ -17,8 +17,26 @@ class ScheduleRecordController extends Controller
             ['power_egg_collected', 'power_eggs'],
         ];
 
-        function buildTotalEggQuery($query) {
-            $totalEggsQuery = <<<QUERY
+        $response = [];
+
+        try {
+            foreach ($queries as $query) {
+                $response['totals'][$query[1]] = DB::select($this->buildTotalEggQuery($query), [$scheduleId])[0];
+                $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleId]);
+            }
+        }
+        catch (Illuminate\Database\QueryException $e) {
+            abort(422, 'Invalid schedule id');
+        }
+        catch (\Exception $e) {
+            abort(500, "Unhandled Exception: {$e->getMessage()}");
+        }
+
+        return $response;
+    }
+
+    static function buildTotalEggQuery($query) {
+        $totalEggsQuery = <<<QUERY
 WITH salmon_ids AS (
     SELECT id FROM salmon_results
     WHERE schedule_id = ?
@@ -34,11 +52,11 @@ SELECT salmon_id AS id, $query[1]
     ORDER BY $query[1] DESC
     LIMIT 1
 QUERY;
-            return $totalEggsQuery;
-        }
+        return $totalEggsQuery;
+    }
 
-        function buildTideXEventRecordsQuery($query) {
-            $queryBuilt = <<<QUERY
+    static function buildTideXEventRecordsQuery($query) {
+        $queryBuilt = <<<QUERY
 WITH salmon_ids AS (
     SELECT id FROM salmon_results
     WHERE schedule_id = ?
@@ -70,24 +88,6 @@ records AS (
 )
 SELECT id, water_id, event_id, $query[1] FROM records WHERE row_num = 1
 QUERY;
-            return $queryBuilt;
-        }
-
-        $response = [];
-
-        try {
-            foreach ($queries as $query) {
-                $response['totals'][$query[1]] = DB::select(buildTotalEggQuery($query), [$scheduleId])[0];
-                $response['wave_records'][$query[1]] = DB::select(buildTideXEventRecordsQuery($query), [$scheduleId]);
-            }
-        }
-        catch (Illuminate\Database\QueryException $e) {
-            abort(422, 'Invalid schedule id');
-        }
-        catch (\Exception $e) {
-            abort(500, "Unhandled Exception: {$e->getMessage()}");
-        }
-
-        return $response;
+        return $queryBuilt;
     }
 }
