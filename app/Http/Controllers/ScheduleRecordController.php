@@ -78,7 +78,7 @@ QUERY;
         try {
             foreach ($queries as $query) {
                 $response['totals'][$query[1]] = DB::select(buildTotalEggQuery($query), [$scheduleId])[0];
-                $response['tides'][$query[1]] = DB::select(buildTideXEventRecordsQuery($query), [$scheduleId]);
+                $response['wave_records'][$query[1]] = DB::select(buildTideXEventRecordsQuery($query), [$scheduleId]);
             }
         }
         catch (Illuminate\Database\QueryException $e) {
