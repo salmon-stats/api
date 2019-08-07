@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ScheduleRecordController extends Controller
 {
     function __invoke(Request $request, string $scheduleId) {
-        if (preg_match('/^\\d{4}-\\d{2}-\\d{2} \\d{2} \\d{2}$/', $scheduleId)) {
-            abort(422, 'Invalid schedule id');
-        }
-
         $queries = [
             ['golden_egg_delivered', 'golden_eggs'],
             ['power_egg_collected', 'power_eggs'],
@@ -20,13 +17,18 @@ class ScheduleRecordController extends Controller
         $response = [];
 
         try {
+            $scheduleId = Carbon::createFromFormat('YmdH', $scheduleId)->format('Y-m-d H:i:s');
+
             foreach ($queries as $query) {
                 $response['totals'][$query[1]] = DB::select($this->buildTotalEggQuery($query), [$scheduleId])[0];
                 $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleId]);
             }
         }
-        catch (Illuminate\Database\QueryException $e) {
+        catch (\InvalidArgumentException $e) {
             abort(422, 'Invalid schedule id');
+        }
+        catch (Illuminate\Database\QueryException $e) {
+            abort(500, 'Query error');
         }
         catch (\Exception $e) {
             abort(500, "Unhandled Exception: {$e->getMessage()}");
