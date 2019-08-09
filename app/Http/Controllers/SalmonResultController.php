@@ -49,10 +49,11 @@ class SalmonResultController extends Controller
                 return $playerResult['pid'];
             }, $playerResults);
             $failReason = $job['job_result']['failure_reason'];
-            $clearWaves = $failReason ? $job['job_result']['failure_wave'] - 1 : 3; // TODO: Don't use magic number
+            $wavesCleared = $failReason ? $job['job_result']['failure_wave'] - 1 : 3; // TODO: Don't use magic number
 
             $existingSalmonResult =
-                SalmonResult::where('start_at', Carbon::parse($job['play_time']))
+                SalmonResult::where('start_at', '>', Carbon::parse($job['play_time'] - 60))
+                    ->where('start_at', '<', Carbon::parse($job['play_time'] + 60))
                     // Note: [1] can match with [1,2] but start_at makes it identical
                     ->whereJsonContains('members', $memberIds)
                     ->first();
@@ -81,15 +82,16 @@ class SalmonResultController extends Controller
                     'members' => $memberIds,
                     'boss_appearances' => $bossAppearances,
                     'uploader_user_id' => $user->id,
-                    'clear_waves' => $clearWaves,
+                    'clear_waves' => $wavesCleared,
                     'fail_reason_id' => $failReason ? $failReason->id : null,
                     'danger_rate' => $job['danger_rate'],
                 ])
                 ->save();
 
-            $waveIndexes = range(0, $clearWaves === 0 ? 0 : $clearWaves - 1);
             $waveDetails = $job['wave_details'];
-            foreach ($waveIndexes as $waveIndex) {
+            $wavesPlayed = sizeof($waveDetails);
+            $waveIndices = range(0, $wavesCleared === 0 ? 0 : $wavesPlayed - 1);
+            foreach ($waveIndices as $waveIndex) {
                 $waveDetail = $waveDetails[$waveIndex];
                 // You don't have to validate event_type and water_level
                 // because it's already done by json schema.
@@ -134,7 +136,7 @@ class SalmonResultController extends Controller
                     'counts' => $bossKillCounts,
                 ]);
 
-                foreach ($waveIndexes as $waveIndex) {
+                foreach ($waveIndices as $waveIndex) {
                     try {
                         \App\SalmonPlayerSpecialUse::create([
                             'salmon_id' => $salmonResult->id,
