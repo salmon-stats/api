@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 class ScheduleRecordController extends Controller
 {
     function __invoke(Request $request, string $scheduleId) {
+        $scheduleTimestamp = \App\Helpers\Helper::scheduleIdToTimestamp($scheduleId);
+
         $queries = [
             ['golden_egg_delivered', 'golden_eggs'],
             ['power_egg_collected', 'power_eggs'],
@@ -17,8 +19,14 @@ class ScheduleRecordController extends Controller
 
         try {
             foreach ($queries as $query) {
-                $response['totals'][$query[1]] = DB::select($this->buildTotalEggQuery($query), [$scheduleId])[0];
-                $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleId]);
+                $totalRecord = DB::select($this->buildTotalEggQuery($query), [$scheduleTimestamp]);
+
+                if (sizeof($totalRecord) === 0) {
+                    return response()->json(new \stdClass());
+                }
+
+                $response['totals'][$query[1]] = $totalRecord[0];
+                $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleTimestamp]);
             }
         }
         catch (\InvalidArgumentException $e) {
