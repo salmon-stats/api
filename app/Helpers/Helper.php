@@ -29,6 +29,6 @@ class Helper
     {
         if (is_null($scheduleId)) return null;
 
-        $scheduleId = Carbon::createFromFormat('YmdH', $scheduleId)->format('Y-m-d H:i:s');
+        return Carbon::createFromFormat('YmdH', $scheduleId)->format('Y-m-d H:i:s');
     }
 }
