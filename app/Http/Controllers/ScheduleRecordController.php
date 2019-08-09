@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class ScheduleRecordController extends Controller
 {
@@ -17,8 +16,6 @@ class ScheduleRecordController extends Controller
         $response = [];
 
         try {
-            $scheduleId = Carbon::createFromFormat('YmdH', $scheduleId)->format('Y-m-d H:i:s');
-
             foreach ($queries as $query) {
                 $response['totals'][$query[1]] = DB::select($this->buildTotalEggQuery($query), [$scheduleId])[0];
                 $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleId]);

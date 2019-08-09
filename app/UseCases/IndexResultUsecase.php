@@ -6,7 +6,7 @@ use App\SalmonResult;
 
 class IndexResultUsecase
 {
-    public function __invoke($playerId = null, $scheduleId = null)
+    public function __invoke($playerId = null, $scheduleTimestamp = null)
     {
         $salmonResults = new SalmonResult();
 
@@ -16,9 +16,9 @@ class IndexResultUsecase
                 ->orderBy('start_at', 'desc')
                 ->paginate(10);
         }
-        else if (!is_null($scheduleId)) {
+        else if (!is_null($scheduleTimestamp)) {
             return $salmonResults
-                ->where('schedule_id', $scheduleId)
+                ->where('schedule_id', $scheduleTimestamp)
                 ->orderBy('id', 'desc')
                 ->paginate(10);
         }

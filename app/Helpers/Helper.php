@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Carbon\Carbon;
+
 class Helper
 {
     public static function generateApiToken()
@@ -18,5 +20,15 @@ class Helper
             $result->{$row->id} = $row->key;
         }
         return $result;
+    }
+
+    /**
+     * @throws InvalidArgumentException if the $schedule_id is in invalid format
+     */
+    public static function scheduleIdToTimestamp($scheduleId)
+    {
+        if (is_null($scheduleId)) return null;
+
+        $scheduleId = Carbon::createFromFormat('YmdH', $scheduleId)->format('Y-m-d H:i:s');
     }
 }
