@@ -36,6 +36,8 @@ class CreateSalmonResultsTable extends Migration
             $table->unsignedBigInteger('uploader_user_id');
             $table->unsignedTinyInteger('clear_waves');
             $table->unsignedTinyInteger('fail_reason_id')->nullable();
+            $table->unsignedSmallInteger('golden_egg_delivered')->null();
+            $table->unsignedSmallInteger('power_egg_collected')->null();
             $table->decimal('danger_rate', 4, 1);
             $table->timestamps();
 

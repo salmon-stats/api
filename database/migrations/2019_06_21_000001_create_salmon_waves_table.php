@@ -57,10 +57,10 @@ class CreateSalmonWavesTable extends Migration
             $table->unsignedTinyInteger('wave');
             $table->unsignedTinyInteger('event_id');
             $table->unsignedTinyInteger('water_id');
-            $table->unsignedSmallInteger('golden_egg_quota')->integer()->null();
-            $table->unsignedSmallInteger('golden_egg_appearances')->integer()->null();
-            $table->unsignedSmallInteger('golden_egg_delivered')->integer()->null();
-            $table->unsignedSmallInteger('power_egg_collected')->integer()->null();
+            $table->unsignedSmallInteger('golden_egg_quota')->null();
+            $table->unsignedSmallInteger('golden_egg_appearances')->null();
+            $table->unsignedSmallInteger('golden_egg_delivered')->null();
+            $table->unsignedSmallInteger('power_egg_collected')->null();
 
             $table->primary(['salmon_id', 'wave']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');
