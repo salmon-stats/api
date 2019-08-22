@@ -84,6 +84,16 @@ class SalmonResultController extends Controller
                     'uploader_user_id' => $user->id,
                     'clear_waves' => $wavesCleared,
                     'fail_reason_id' => $failReason ? $failReason->id : null,
+                    'golden_egg_delivered' => array_reduce(
+                        $job['wave_details'],
+                        function ($sum, $wave) { return $sum + $wave['golden_ikura_num']; },
+                        0,
+                    ),
+                    'power_egg_collected' => array_reduce(
+                        $job['wave_details'],
+                        function ($sum, $wave) { return $sum + $wave['ikura_num']; },
+                        0,
+                    ),
                     'danger_rate' => $job['danger_rate'],
                 ])
                 ->save();

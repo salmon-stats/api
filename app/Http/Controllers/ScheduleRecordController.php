@@ -44,18 +44,9 @@ class ScheduleRecordController extends Controller
 
     static function buildTotalEggQuery($query) {
         $totalEggsQuery = <<<QUERY
-WITH salmon_ids AS (
-    SELECT id FROM salmon_results
+SELECT id, $query[0] AS $query[1]
+    FROM salmon_results
     WHERE schedule_id = ?
-),
-total_golden_eggs AS (
-    SELECT salmon_id, CAST(SUM($query[0]) AS SIGNED) AS $query[1]
-    FROM salmon_ids
-    LEFT OUTER JOIN salmon_waves ON salmon_waves.salmon_id = salmon_ids.id
-    GROUP BY salmon_id
-)
-SELECT salmon_id AS id, $query[1]
-    FROM total_golden_eggs
     ORDER BY $query[1] DESC
     LIMIT 1
 QUERY;
