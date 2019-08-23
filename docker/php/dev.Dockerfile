@@ -7,8 +7,15 @@ RUN apt-get update \
 git \
 zip \
 unzip \
-vim
-
+vim \
+cron
 RUN docker-php-ext-install pdo_mysql
+
+COPY crontab /etc/cron.d/crontab
+RUN chmod 0644 /etc/cron.d/crontab
+RUN crontab /etc/cron.d/crontab
+RUN touch /var/log/cron.log
+
+CMD service cron start && tail -f /var/log/cron.log
 
 WORKDIR /var/www/html
