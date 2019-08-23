@@ -28,42 +28,6 @@ class CreateSalmonSchedulesTable extends Migration
                 $table->foreign('stage_id')->references('id')->on('salmon_stages')->onDelete('cascade');
                 // $table->foreign('rare_weapon_id')->references('id')->on('salmon_weapons')->onDelete('cascade');
             });
-
-            $stageJapaneseNames = [
-                'シェケナダム' => 1,
-                '難破船ドン・ブラコ' => 2,
-                '海上集落シャケト場' => 3,
-                'トキシラズいぶし工房' => 4,
-                '朽ちた箱舟 ポラリス' => 5,
-            ];
-
-            $client = new Client();
-            $result = $client->get('https://spla2.yuu26.com/coop');
-            if ($result->getStatusCode() == 200) {
-                $schedules = json_decode($result->getBody())->result;
-            } else {
-                throw new RuntimeException("spla2.yuu26.com API is unavailable.");
-            }
-
-            foreach ($schedules as $schedule) {
-                if (!$schedule->weapons) {
-                    continue;
-                }
-
-                $weapons = array_map(function ($weapon) {
-                    return $weapon->id;
-                }, $schedule->weapons);
-                $startTime = Carbon::parse($schedule->start_utc);
-                $endTime = Carbon::parse($schedule->end_utc);
-
-                DB::table('salmon_schedules')->insert([
-                    'schedule_id' => $startTime,
-                    'end_at' => $endTime,
-                    'weapons' => json_encode($weapons),
-                    'rare_weapon_id' => 20000,
-                    'stage_id' => $stageJapaneseNames[$schedule->stage->name],
-                ]);
-            }
         });
     }
 

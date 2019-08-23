@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Helpers;
+
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use function GuzzleHttp\json_decode;
+
+class SalmonScheduleFetcher
+{
+    public function __construct()
+    {
+        $this->client = new Client();
+    }
+
+    public function fetchPastSchedules()
+    {
+        $schedules = $this->fetchFromYuu26();
+        \App\SalmonSchedule::insert($schedules);
+    }
+
+    private function fetchJson(String $url)
+    {
+        $response = $this->client->get($url);
+
+        if ($response->getStatusCode() == 200) {
+            return json_decode($response->getBody());
+        }
+        else {
+            throw new RuntimeException("API: $url is currently unavailable.");
+        }
+    }
+
+    private function fetchFromYuu26()
+    {
+        $schedules = $this->fetchJson('https://spla2.yuu26.com/coop')->result;
+
+        return collect($schedules)
+            ->filter(function ($schedule) { return !is_null($schedule->weapons); })
+            ->map(function ($schedule) {
+                $stageJapaneseNames = [
+                    'シェケナダム' => 1,
+                    '難破船ドン・ブラコ' => 2,
+                    '海上集落シャケト場' => 3,
+                    'トキシラズいぶし工房' => 4,
+                    '朽ちた箱舟 ポラリス' => 5,
+                ];
+                $weapons = array_map(
+                    function ($weapon) { return $weapon->id; },
+                    $schedule->weapons,
+                );
+                $startTime = Carbon::parse($schedule->start_utc);
+                $endTime = Carbon::parse($schedule->end_utc);
+
+                return [
+                    'schedule_id' => $startTime,
+                    'end_at' => $endTime,
+                    'weapons' => json_encode($weapons),
+                    'stage_id' => $stageJapaneseNames[$schedule->stage->name],
+                ];
+            })
+            ->toArray();
+    }
+}
