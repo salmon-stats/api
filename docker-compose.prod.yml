@@ -13,10 +13,10 @@ services:
     build:
       context: .
       dockerfile: ./docker/php/prod.Dockerfile
-    ports:
-      - 9000:9000
     volumes:
       - ./storage:/var/www/html/storage
+    expose:
+      - '9000'
 
   mysql:
     restart: always
@@ -29,8 +29,8 @@ services:
       - MYSQL_DATABASE=${DB_DATABASE}
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-    ports:
-      - 3306:3306
+    expose:
+      - '3306'
 
 volumes:
   mysqldata:
