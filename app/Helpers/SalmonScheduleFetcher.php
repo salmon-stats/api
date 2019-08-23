@@ -19,6 +19,12 @@ class SalmonScheduleFetcher
         \App\SalmonSchedule::insert($schedules);
     }
 
+    public function fetchFutureSchedules()
+    {
+        $schedules = $this->fetchFromSplatoon2Ink();
+        \App\SalmonSchedule::insert($schedules);
+    }
+
     private function fetchJson(String $url)
     {
         $response = $this->client->get($url);
@@ -57,6 +63,36 @@ class SalmonScheduleFetcher
                     'end_at' => $endTime,
                     'weapons' => json_encode($weapons),
                     'stage_id' => $stageJapaneseNames[$schedule->stage->name],
+                ];
+            })
+            ->toArray();
+    }
+
+    private function fetchFromSplatoon2Ink()
+    {
+        $schedules = $this->fetchJson('https://splatoon2.ink/data/coop-schedules.json')->details;
+
+        return collect($schedules)
+            ->map(function ($schedule) {
+                $stageEnglishNames = [
+                    'Spawning Grounds' => 1,
+                    'Marooner\'s Bay' => 2,
+                    'Lost Outpost' => 3,
+                    'Salmonid Smokeyard' => 4,
+                    'Ruins of Ark Polaris' => 5,
+                ];
+                $weapons = array_map(
+                    function ($weapon) { return $weapon->id; },
+                    $schedule->weapons,
+                );
+                $startTime = Carbon::createFromTimestamp($schedule->start_time);
+                $endTime = Carbon::createFromTimestamp($schedule->end_time);
+
+                return [
+                    'schedule_id' => $startTime,
+                    'end_at' => $endTime,
+                    'weapons' => json_encode($weapons),
+                    'stage_id' => $stageEnglishNames[$schedule->stage->name],
                 ];
             })
             ->toArray();
