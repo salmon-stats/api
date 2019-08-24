@@ -8,7 +8,8 @@ git \
 zip \
 unzip \
 vim \
-cron
+cron \
+supervisor
 RUN docker-php-ext-install pdo_mysql
 
 COPY crontab /etc/cron.d/crontab
@@ -19,3 +20,7 @@ RUN touch /var/log/cron.log
 CMD service cron start && tail -f /var/log/cron.log
 
 WORKDIR /var/www/html
+
+COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -31,8 +31,8 @@ services:
       - MYSQL_DATABASE=${DB_DATABASE}
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-    expose:
-      - '3306'
+    ports:
+      - 3306:3306
 
 volumes:
   mysqldata:
