@@ -17,8 +17,6 @@ RUN chmod 0644 /etc/cron.d/crontab
 RUN crontab /etc/cron.d/crontab
 RUN touch /var/log/cron.log
 
-CMD service cron start && tail -f /var/log/cron.log
-
 WORKDIR /var/www/html
 
 COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
