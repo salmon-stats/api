@@ -16,13 +16,23 @@ class SalmonScheduleFetcher
     public function fetchPastSchedules()
     {
         $schedules = $this->fetchFromYuu26();
-        \App\SalmonSchedule::insert($schedules);
+        \App\SalmonSchedule::insert($this->filterExistingScheduls($schedules));
     }
 
     public function fetchFutureSchedules()
     {
         $schedules = $this->fetchFromSplatoon2Ink();
-        \App\SalmonSchedule::insert($schedules);
+        \App\SalmonSchedule::insert($this->filterExistingScheduls($schedules));
+    }
+
+    private function filterExistingScheduls($schedules) {
+        $latestScheduleId = \App\SalmonSchedule::max('schedule_id');
+        return array_filter(
+            $schedules,
+            function ($schedule) use ($latestScheduleId) {
+                return $schedule['schedule_id'] > $latestScheduleId;
+            },
+        );
     }
 
     private function fetchJson(String $url)
