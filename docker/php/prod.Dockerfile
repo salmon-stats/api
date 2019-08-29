@@ -4,7 +4,7 @@ COPY . /var/www/html
 
 RUN docker-php-ext-install pdo_mysql
 
-RUN apk add --no-cache supervisor
+RUN apk add --no-cache su-exec supervisor
 
 COPY ./docker/php/crontab /etc/cron.d/crontab
 RUN chmod 0644 /etc/cron.d/crontab
