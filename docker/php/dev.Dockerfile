@@ -1,15 +1,10 @@
-FROM php:7.3-fpm
+FROM php:7.3.8-fpm-alpine3.9
 
 # install composer
-RUN cd /usr/bin && curl -s http://getcomposer.org/installer | php && ln -s /usr/bin/composer.phar /usr/bin/composer
-RUN apt-get update \
-&& apt-get install -y \
-git \
-zip \
-unzip \
-vim \
-cron \
-supervisor
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+RUN apk update && apk add --no-cache git zip unzip vim curl supervisor
+
 RUN docker-php-ext-install pdo_mysql
 
 COPY crontab /etc/cron.d/crontab
