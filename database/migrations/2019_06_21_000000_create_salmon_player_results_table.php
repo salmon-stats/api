@@ -39,6 +39,10 @@ class CreateSalmonPlayerResultsTable extends Migration
             $table->unsignedTinyInteger('death');
             $table->unsignedTinyInteger('special_id');
 
+            // This value can be calculated by joining / aggregating other tables,
+            // however, for performance / simplicity sake, we need this column.
+            $table->unsignedTinyInteger('boss_elimination_count');
+
             $table->primary(['salmon_id', 'player_id']);
             $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');
             // $table->foreign('player_id')->references('player_id')->on('users')->onDelete('cascade');
@@ -60,10 +64,6 @@ class CreateSalmonPlayerResultsTable extends Migration
             $table->unsignedBigInteger('salmon_id');
             $table->playerId('player_id');
             $table->json('counts');
-
-            // This value can be calculated by joining / aggregating other tables,
-            // however, for performance / simplicity sake, we need this column.
-            $table->unsignedTinyInteger('total');
 
             $table->primary(['salmon_id', 'player_id'], 'salmon_player_boss_eliminations_pk');
             $table->foreign('salmon_id')->references('id')->on('salmon_results')->onDelete('cascade');

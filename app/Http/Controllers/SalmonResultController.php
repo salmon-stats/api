@@ -131,6 +131,8 @@ class SalmonResultController extends Controller
             }
 
             foreach ($playerResults as $playerResult) {
+                $bossKillCounts = \App\Helpers\Helper::mapCount($playerResult['boss_kill_counts']);
+
                 \App\SalmonPlayerResult::create([
                     'salmon_id' => $salmonResult->id,
                     'player_id' => $playerResult['pid'],
@@ -139,14 +141,12 @@ class SalmonResultController extends Controller
                     'rescue' => $playerResult['help_count'],
                     'death' => $playerResult['dead_count'],
                     'special_id' => (int) $playerResult['special']['id'],
+                    'boss_elimination_count' => array_sum($bossKillCounts),
                 ]);
-
-                $bossKillCounts = \App\Helpers\Helper::mapCount($playerResult['boss_kill_counts']);
 
                 \App\SalmonPlayerBossElimination::create([
                     'salmon_id' => $salmonResult->id,
                     'player_id' => $playerResult['pid'],
-                    'total' => array_sum($bossKillCounts),
                     'counts' => $bossKillCounts,
                 ]);
 
