@@ -44,7 +44,10 @@ class ScheduleRecordController extends Controller
 
     static function buildTotalEggQuery($query) {
         $totalEggsQuery = <<<QUERY
-SELECT id, $query[0] AS $query[1]
+SELECT
+        id,
+        golden_egg_delivered AS golden_eggs,
+        power_egg_collected AS power_eggs
     FROM salmon_results
     WHERE schedule_id = ?
     ORDER BY $query[1] DESC
@@ -77,14 +80,15 @@ records AS (
             id,
             wave_results.water_id,
             wave_results.event_id AS event_id,
-            $query[0] AS $query[1],
+            golden_egg_delivered AS golden_eggs,
+            power_egg_collected AS power_eggs,
             ROW_NUMBER() OVER (PARTITION BY wave_results.water_id, wave_results.event_id ORDER BY $query[0] DESC) AS row_num
         FROM water_x_event
         INNER JOIN wave_results ON water_x_event.water_id = wave_results.water_id
             AND (water_x_event.event_id = wave_results.event_id
                 OR (water_x_event.event_id IS NULL AND wave_results.event_id IS NULL))
 )
-SELECT id, water_id, event_id, $query[1] FROM records WHERE row_num = 1
+SELECT id, water_id, event_id, golden_eggs, power_eggs FROM records WHERE row_num = 1
 QUERY;
         return $queryBuilt;
     }
