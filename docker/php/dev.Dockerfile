@@ -3,7 +3,7 @@ FROM php:7.3.8-fpm-alpine3.9
 # install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-RUN apk update && apk add --no-cache git zip unzip vim curl su-exec supervisor
+RUN apk update && apk add --no-cache bash git zip unzip vim curl su-exec supervisor
 
 RUN docker-php-ext-install pdo_mysql
 
