@@ -70,9 +70,12 @@ class SalmonResultController extends Controller
                 'key', $job['job_result']['failure_reason']
             )->first();
 
-            $bossAppearances = array_map(function ($boss) {
-                return $boss['count'];
-            }, $job['boss_counts']);
+            $bossAppearances = \App\Helpers\Helper::mapCount($job['boss_counts']);
+            $bossEliminationCount = array_sum(
+                array_map(function ($playerResult) {
+                    return array_sum(\App\Helpers\Helper::mapCount($playerResult['boss_kill_counts']));
+                }, $playerResults),
+            );
 
             $salmonResult = new SalmonResult();
             $salmonResult
@@ -84,6 +87,7 @@ class SalmonResultController extends Controller
                     'uploader_user_id' => $user->id,
                     'clear_waves' => $wavesCleared,
                     'fail_reason_id' => $failReason ? $failReason->id : null,
+                    'danger_rate' => $job['danger_rate'],
                     'golden_egg_delivered' => array_reduce(
                         $job['wave_details'],
                         function ($sum, $wave) { return $sum + $wave['golden_ikura_num']; },
@@ -94,7 +98,8 @@ class SalmonResultController extends Controller
                         function ($sum, $wave) { return $sum + $wave['ikura_num']; },
                         0,
                     ),
-                    'danger_rate' => $job['danger_rate'],
+                    'boss_appearance_count' => array_sum($bossAppearances),
+                    'boss_elimination_count' => $bossEliminationCount,
                 ])
                 ->save();
 
@@ -136,13 +141,12 @@ class SalmonResultController extends Controller
                     'special_id' => (int) $playerResult['special']['id'],
                 ]);
 
-                $bossKillCounts = array_map(function ($boss) {
-                    return $boss['count'];
-                }, $playerResult['boss_kill_counts']);
+                $bossKillCounts = \App\Helpers\Helper::mapCount($playerResult['boss_kill_counts']);
 
                 \App\SalmonPlayerBossElimination::create([
                     'salmon_id' => $salmonResult->id,
                     'player_id' => $playerResult['pid'],
+                    'total' => array_sum($bossKillCounts),
                     'counts' => $bossKillCounts,
                 ]);
 

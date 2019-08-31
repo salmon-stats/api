@@ -22,6 +22,11 @@ class Helper
         return $result;
     }
 
+    public static function mapCount($associativeArray)
+    {
+        return array_map(function($item) { return $item['count']; }, $associativeArray);
+    }
+
     /**
      * @throws InvalidArgumentException if the $schedule_id is in invalid format
      */

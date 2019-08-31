@@ -36,10 +36,15 @@ class CreateSalmonResultsTable extends Migration
             $table->unsignedBigInteger('uploader_user_id');
             $table->unsignedTinyInteger('clear_waves');
             $table->unsignedTinyInteger('fail_reason_id')->nullable();
-            $table->unsignedSmallInteger('golden_egg_delivered')->null();
-            $table->unsignedSmallInteger('power_egg_collected')->null();
             $table->decimal('danger_rate', 4, 1);
             $table->timestamps();
+
+            // These values can be calculated by joining / aggregating other tables,
+            // however, for performance / simplicity sake, we need these columns.
+            $table->unsignedSmallInteger('golden_egg_delivered');
+            $table->unsignedSmallInteger('power_egg_collected');
+            $table->unsignedTinyInteger('boss_appearance_count');
+            $table->unsignedTinyInteger('boss_elimination_count');
 
             $table->foreign('schedule_id')->references('schedule_id')->on('salmon_schedules')->onDelete('cascade');
             $table->foreign('uploader_user_id')->references('id')->on('users')->onDelete('cascade');
