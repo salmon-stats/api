@@ -23,8 +23,18 @@ class SalmonResult extends Model
 
     public function getMemberAccountsAttribute() {
         return collect($this->members)->map(function ($playerId) {
-            return \App\User::where('player_id', $playerId)->first();
-        });
+            // TODO: optimize query
+            $user = \App\User::where('player_id', $playerId)->first();
+
+            if (empty($user)) {
+                return [
+                    'player_id' => $playerId,
+                    'name' => \App\SalmonPlayerName::where('player_id', $playerId)->first()->name,
+                ];
+            }
+
+            return $user;
+       });
     }
 
     public function schedule()
