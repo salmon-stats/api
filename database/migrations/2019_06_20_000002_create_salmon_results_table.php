@@ -30,7 +30,7 @@ class CreateSalmonResultsTable extends Migration
         Schema::create('salmon_results', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('schedule_id')->index();
-            $table->dateTime('start_at');
+            $table->dateTime('start_at')->index();
             $table->json('members'); // array of pids
             $table->json('boss_appearances');
             $table->unsignedBigInteger('uploader_user_id');

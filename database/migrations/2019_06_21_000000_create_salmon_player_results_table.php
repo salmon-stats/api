@@ -32,7 +32,7 @@ class CreateSalmonPlayerResultsTable extends Migration
 
         Schema::create('salmon_player_results', function (Blueprint $table) {
             $table->unsignedBigInteger('salmon_id');
-            $table->playerId('player_id');
+            $table->playerId('player_id')->index();
             $table->unsignedBigInteger('golden_eggs');
             $table->unsignedBigInteger('power_eggs');
             $table->unsignedTinyInteger('rescue');

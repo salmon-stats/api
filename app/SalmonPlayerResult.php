@@ -14,6 +14,17 @@ class SalmonPlayerResult extends Model
     protected $guarded = [];
     public $timestamps = false;
 
+    public function salmonResult()
+    {
+        return $this
+            ->belongsTo(
+                'App\SalmonResult',
+                'salmon_id',
+                'id',
+            )
+            ->orderBy('start_at', 'desc');
+    }
+
     public function bossEliminations()
     {
         return $this

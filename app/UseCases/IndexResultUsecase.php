@@ -3,6 +3,7 @@
 namespace App\UseCases;
 
 use App\SalmonResult;
+use App\SalmonPlayerResult;
 
 class IndexResultUsecase
 {
@@ -11,9 +12,10 @@ class IndexResultUsecase
         $salmonResults = new SalmonResult();
 
         if (!is_null($playerId)) {
-            return $salmonResults
-                ->whereJsonContains('members', $playerId)
-                ->orderBy('start_at', 'desc')
+            $salmonPlayerResults = new SalmonPlayerResult();
+            return $salmonPlayerResults
+                ->where('player_id', $playerId)
+                ->with(['salmonResult'])
                 ->paginate(10);
         }
         else if (!is_null($scheduleTimestamp)) {
