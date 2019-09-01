@@ -144,6 +144,27 @@ class SalmonResultController extends Controller
                     'boss_elimination_count' => array_sum($bossKillCounts),
                 ]);
 
+                // updateOrCreate can't be used as upsert here.
+                $updateplayerNamesQuery = <<<QUERY
+INSERT into salmon_player_names (player_id, name, created_at, updated_at)
+    VALUES (?, ?, CURRENT_TIMESTAMP, ?)
+    ON DUPLICATE KEY UPDATE
+        name = IF(updated_at < ?, ?, name),
+        updated_at = IF(updated_at < ?, ?, updated_at)
+QUERY;
+                DB::insert(
+                    $updateplayerNamesQuery,
+                    [
+                        $playerResult['pid'],
+                        $playerResult['name'],
+                        Carbon::parse($job['play_time']),
+                        Carbon::parse($job['play_time']),
+                        $playerResult['name'],
+                        Carbon::parse($job['play_time']),
+                        Carbon::parse($job['play_time']),
+                    ],
+                );
+
                 \App\SalmonPlayerBossElimination::create([
                     'salmon_id' => $salmonResult->id,
                     'player_id' => $playerResult['pid'],
