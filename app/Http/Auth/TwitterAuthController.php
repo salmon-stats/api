@@ -31,11 +31,18 @@ class TwitterAuthController extends Controller
         return redirect($authUser->getPlayerPage() ?? env('APP_FRONTEND_ORIGIN'));
     }
 
+    private function replaceHttpWithHttps($url)
+    {
+        return preg_replace('/^http:/i', 'https:', $url);
+    }
+
     private function findOrCreateUser($twitterUser)
     {
         $authUser = User::where('twitter_id', $twitterUser->id)->first();
 
         if ($authUser) {
+            $authUser->twitter_avatar = $this->replaceHttpWithHttps($twitterUser->avatar_original);
+            $authUser->save();
             return $authUser;
         }
 
@@ -45,7 +52,7 @@ class TwitterAuthController extends Controller
             'twitter_id' => $twitterUser->id,
             // api_token must be unique; 256-bit hash won't practically collide.
             'api_token' => \App\Helpers\Helper::generateApiToken(),
-            'twitter_avatar' => preg_replace('/^http:/i', 'https:', $twitterUser->avatar_original),
+            'twitter_avatar' => $this->replaceHttpWithHttps($twitterUser->avatar_original),
         ]);
     }
 
