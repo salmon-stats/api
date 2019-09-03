@@ -72,7 +72,9 @@ Route::get('/players/{screen_name}', function (Request $request, string $screenN
         abort(404);
     }
 
-    return redirect()->route('players.summary', [$user->player_id]);
+    $request->merge(['player_id' => $user->player_id]);
+
+    return app()->call('App\Http\Controllers\SalmonPlayerController@index');
 })->where('screen_name', '^@\w{1,15}');
 
 Route::get('/players/{player_id}', 'SalmonPlayerController@index')->name('players.summary');
