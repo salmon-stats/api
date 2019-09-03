@@ -59,7 +59,9 @@ Route::get('/id-key-map', function () {
 })->name('id-key-map');
 
 // player routes
-Route::get('/players/@/{screen_name}', function (Request $request, string $screenName) {
+Route::get('/players/{screen_name}', function (Request $request, string $screenNameWithAt) {
+    $screenName = strtolower(str_replace('@', '', $screenNameWithAt));
+
     try {
         $user = User::where('name', $screenName)->firstOrFail();
     } catch (Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -71,7 +73,7 @@ Route::get('/players/@/{screen_name}', function (Request $request, string $scree
     }
 
     return redirect()->route('players.summary', [$user->player_id]);
-})->where('screen_name', '^@[\d\w_]{1,15}');
+})->where('screen_name', '^@\w{1,15}');
 
 Route::get('/players/{player_id}', 'SalmonPlayerController@index')->name('players.summary');
 
