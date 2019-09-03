@@ -59,22 +59,7 @@ Route::get('/id-key-map', function () {
 });
 
 // player routes
-Route::get('/players/{player_id}', function (Request $request, $playerId) {
-    // Player must have appeared in salmon_results at least once.
-    if (!SalmonResult::whereJsonContains('members', $playerId)->exists()) {
-        abort(404, "Player `$playerId` has no record.");
-    }
-
-    $user = User::where('player_id', $playerId)->first();
-
-    $results = \App::call('App\Http\Controllers\SalmonResultController@index');
-    $resultsWithoutPagination = $results->toArray()['data'];
-
-    return [
-        'user' => $user,
-        'results' => $resultsWithoutPagination,
-    ];
-})->name('player.summary');
+Route::get('/players/{player_id}', 'SalmonPlayerController@index', 'player.summary');
 
 Route::get('/players/{player_id}/results', 'SalmonResultController@index')->name('player.results');
 
@@ -91,7 +76,6 @@ Route::get('/players/@/{screen_name}', function (Request $request, string $scree
 
     return redirect()->route('player.summary', [$user->player_id]);
 });
-
 
 Route::get('/schedules/{schedule_id}','SalmonScheduleController@index', 'schedules.summary');
 
