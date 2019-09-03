@@ -14,8 +14,11 @@ class IndexResultUsecase
         if (!is_null($playerId)) {
             $salmonPlayerResults = new SalmonPlayerResult();
             return $salmonPlayerResults
+                ->select('salmon_player_results.*')
                 ->where('player_id', $playerId)
-                ->with(['salmonResult'])
+                ->with('salmonResult')
+                ->join('salmon_results', 'salmon_results.id', '=', 'salmon_player_results.salmon_id')
+                ->orderBy('salmon_results.start_at', 'desc')
                 ->paginate(10);
         }
         else if (!is_null($scheduleTimestamp)) {

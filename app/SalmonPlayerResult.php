@@ -21,8 +21,7 @@ class SalmonPlayerResult extends Model
                 'App\SalmonResult',
                 'salmon_id',
                 'id',
-            )
-            ->orderBy('start_at', 'desc');
+            );
     }
 
     public function bossEliminations()
