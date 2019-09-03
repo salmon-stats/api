@@ -92,9 +92,8 @@ Route::get('/players/@/{screen_name}', function (Request $request, string $scree
     return redirect()->route('player.summary', [$user->player_id]);
 });
 
-Route::get('/schedules/{schedule_id}/results', 'SalmonResultController@index', 'schedules.results');
 
-Route::get('/schedules/{schedule_id}/records', 'ScheduleRecordController', 'schedules.records');
+Route::get('/schedules/{schedule_id}','SalmonScheduleController@index', 'schedules.summary');
 
 /*
  * Endpoints requires authentication

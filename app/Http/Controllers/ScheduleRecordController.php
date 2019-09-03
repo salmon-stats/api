@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class ScheduleRecordController extends Controller
 {
-    function __invoke(Request $request, string $scheduleId) {
+    function __invoke(Request $request) {
+        $scheduleId = $request->schedule_id;
         $scheduleTimestamp = \App\Helpers\Helper::scheduleIdToTimestamp($scheduleId);
 
         $queries = [
@@ -22,7 +23,7 @@ class ScheduleRecordController extends Controller
                 $totalRecord = DB::select($this->buildTotalEggQuery($query), [$scheduleTimestamp]);
 
                 if (sizeof($totalRecord) === 0) {
-                    return response()->json(new \stdClass());
+                    return null;
                 }
 
                 $response['totals'][$query[1]] = $totalRecord[0];
