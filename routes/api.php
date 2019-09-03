@@ -21,9 +21,9 @@ use App\Helpers\Helper;
 /*
  * Public endpoints
  */
-Route::get('/results', 'SalmonResultController@index', 'results.index');
+Route::get('/results', 'SalmonResultController@index')->name('results');
 
-Route::get('/results/{id}', 'SalmonResultController@show', 'results.show');
+Route::get('/results/{id}', 'SalmonResultController@show')->name('results.show');
 
 Route::get('/id-key-map', function () {
     $bosses = Helper::makeIdTokeyMap(
@@ -56,13 +56,9 @@ Route::get('/id-key-map', function () {
         'water_level' => $waterLevels,
         'weapon' => $weapons,
     ];
-});
+})->name('id-key-map');
 
 // player routes
-Route::get('/players/{player_id}', 'SalmonPlayerController@index', 'player.summary');
-
-Route::get('/players/{player_id}/results', 'SalmonResultController@index')->name('player.results');
-
 Route::get('/players/@/{screen_name}', function (Request $request, string $screenName) {
     try {
         $user = User::where('name', $screenName)->firstOrFail();
@@ -74,8 +70,12 @@ Route::get('/players/@/{screen_name}', function (Request $request, string $scree
         abort(404);
     }
 
-    return redirect()->route('player.summary', [$user->player_id]);
-});
+    return redirect()->route('players.summary', [$user->player_id]);
+})->where('screen_name', '^@[\d\w_]{1,15}');
+
+Route::get('/players/{player_id}', 'SalmonPlayerController@index')->name('players.summary');
+
+Route::get('/players/{player_id}/results', 'SalmonResultController@index')->name('players.results');
 
 Route::get('/schedules/{schedule_id}','SalmonScheduleController@index', 'schedules.summary');
 
@@ -92,6 +92,6 @@ Route::group(['middleware' => ['auth:api']], function () {
             abort(404, 'You don\'t have uploaded results yet.');
         }
 
-        return redirect()->route('player.summary', [$user->player_id]);
+        return redirect()->route('players.summary', [$user->player_id]);
     });
 });
