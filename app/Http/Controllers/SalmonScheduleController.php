@@ -16,6 +16,7 @@ class SalmonScheduleController extends Controller
 
     public function index(Request $request)
     {
-        return $this->repository->get($request->schedule_id);
+        $isRequestingResults = $request->route()->getName() === 'schedules.results';
+        return $this->repository->get($request->schedule_id, $isRequestingResults);
     }
 }
