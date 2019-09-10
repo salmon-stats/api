@@ -57,7 +57,7 @@ Route::get('/id-key-map', function () {
 
 // Results routes
 Route::get('/results', 'SalmonResultController@index')->name('results');
-Route::get('/results/{id}', 'SalmonResultController@show')->name('results.show');
+Route::get('/results/{salmon_id}', 'SalmonResultController@show')->name('results.show');
 
 // Players routes
 Route::get('/players/{screen_name}', function (Request $request, string $screenNameWithAt) {
@@ -80,6 +80,7 @@ Route::get('/players/{screen_name}', function (Request $request, string $screenN
 Route::get('/players/metadata', 'SalmonPlayerMetadata')->name('players.metadata');
 Route::get('/players/{player_id}', 'SalmonPlayerController@index')->name('players.summary');
 Route::get('/players/{player_id}/results', 'SalmonResultController@index')->name('players.results');
+Route::get('/players/{player_id}/results/latest', 'SalmonResultController@show')->name('players.results.latest');
 
 // Schedules routes
 Route::get('/schedules/{schedule_id}','SalmonScheduleController@index')->name('schedules.summary');

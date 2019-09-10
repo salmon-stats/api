@@ -257,13 +257,19 @@ QUERY;
      * @param  int  $salmonId
      * @return \Illuminate\Http\Response
      */
-    public function show($salmonId)
+    public function show(Request $request)
     {
-        $salmonResult = SalmonResult::where('id', $salmonId)
+        if (isset($request->player_id))  {
+            $query = SalmonResult::whereJsonContains('members', $request->player_id)
+                ->orderBy('id', 'desc');
+        }
+        elseif (isset($request->salmon_id)) {
+            $query = SalmonResult::where('id', $request->salmon_id);
+        }
+
+        return $query
             ->with(['playerResults', 'schedule', 'waves'])
             ->firstOrFail()
             ->append('member_accounts');
-
-        return $salmonResult;
     }
 }
