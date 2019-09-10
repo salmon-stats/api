@@ -25,7 +25,7 @@ class SalmonPlayerMetadata extends Controller
                 ->leftJoin('users', 'users.player_id', '=', 'salmon_player_names.player_id')
                 ->select(
                     DB::raw('COALESCE(users.name, salmon_player_names.name) AS name'),
-                    DB::raw('CASE WHEN users.name = null THEN FALSE ELSE TRUE END AS is_registered'),
+                    DB::raw('CASE WHEN users.name IS NULL THEN FALSE ELSE TRUE END AS is_registered'),
                     'users.twitter_avatar',
                     'salmon_player_names.player_id AS player_id',
                 )
@@ -69,7 +69,7 @@ class SalmonPlayerMetadata extends Controller
             DB::table('salmon_player_names')
                 ->select(
                     DB::raw('COALESCE(users.name, salmon_player_names.name) AS name'),
-                    DB::raw('CASE WHEN users.name = null THEN FALSE ELSE TRUE END AS is_registered'),
+                    DB::raw('CASE WHEN users.name IS NULL THEN FALSE ELSE TRUE END AS is_registered'),
                     'users.twitter_avatar',
                     'salmon_player_names.player_id AS player_id',
                 )
