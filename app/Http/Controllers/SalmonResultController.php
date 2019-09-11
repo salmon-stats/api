@@ -23,7 +23,7 @@ class SalmonResultController extends Controller
     public function index(Request $request, IndexResultUsecase $usecase)
     {
         $scheduleTimestamp = \App\Helpers\Helper::scheduleIdToTimestamp($request->schedule_id);
-        return $usecase($request->player_id, $scheduleTimestamp);
+        return $usecase($request->player_id, $scheduleTimestamp, $request->route()->getName());
     }
 
     /**
