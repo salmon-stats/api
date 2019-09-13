@@ -6,6 +6,11 @@ use Carbon\Carbon;
 
 class Helper
 {
+    public static function convertGradePoint(Array $job): int
+    {
+        return ($job['grade']['id'] - 1) * 100 + $job['grade_point'];
+    }
+
     public static function generateApiToken()
     {
         $token = random_bytes(60);

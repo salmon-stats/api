@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helper;
+use App\SalmonPlayerResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -22,7 +24,7 @@ class SalmonResultController extends Controller
      */
     public function index(Request $request, IndexResultUsecase $usecase)
     {
-        $scheduleTimestamp = \App\Helpers\Helper::scheduleIdToTimestamp($request->schedule_id);
+        $scheduleTimestamp = Helper::scheduleIdToTimestamp($request->schedule_id);
         return $usecase($request->player_id, $scheduleTimestamp, $request->route()->getName());
     }
 
@@ -38,9 +40,9 @@ class SalmonResultController extends Controller
     }
     */
 
-    protected function createRecords($job, $user, $jobPlayerId)
+    protected function createRecords($job, $user, $uploaderPlayerId)
     {
-        return function () use ($job, $user, $jobPlayerId) {
+        return function () use ($job, $user, $uploaderPlayerId) {
             $playerJobId = $job['job_id'] ?: null;
             $playerResults = array_merge([$job['my_result']], $job['other_results']);
             usort($playerResults, function ($a, $b) { return $a['pid'] > $b['pid'] ? 1 : -1; });
@@ -59,6 +61,18 @@ class SalmonResultController extends Controller
                     ->first();
 
             if ($existingSalmonResult) {
+                $gradePoint = Helper::convertGradePoint($job);
+
+                SalmonPlayerResult::where([
+                    'salmon_id' => $existingSalmonResult->id,
+                    'player_id' => $uploaderPlayerId,
+                ])
+                    ->update([
+                        'grade_point' => DB::raw(
+                            "CASE WHEN grade_point IS NULL THEN $gradePoint ELSE grade_point END",
+                        ),
+                    ]);
+
                 return [
                     'created' => false,
                     'job_id' => $playerJobId,
@@ -70,10 +84,10 @@ class SalmonResultController extends Controller
                 'key', $job['job_result']['failure_reason']
             )->first();
 
-            $bossAppearances = \App\Helpers\Helper::mapCount($job['boss_counts']);
+            $bossAppearances = Helper::mapCount($job['boss_counts']);
             $bossEliminationCount = array_sum(
                 array_map(function ($playerResult) {
-                    return array_sum(\App\Helpers\Helper::mapCount($playerResult['boss_kill_counts']));
+                    return array_sum(Helper::mapCount($playerResult['boss_kill_counts']));
                 }, $playerResults),
             );
 
@@ -131,9 +145,8 @@ class SalmonResultController extends Controller
             }
 
             foreach ($playerResults as $playerResult) {
-                $bossKillCounts = \App\Helpers\Helper::mapCount($playerResult['boss_kill_counts']);
-
-                \App\SalmonPlayerResult::create([
+                $bossKillCounts = Helper::mapCount($playerResult['boss_kill_counts']);
+                $salmonPlayerResult = [
                     'salmon_id' => $salmonResult->id,
                     'player_id' => $playerResult['pid'],
                     'golden_eggs' => $playerResult['golden_ikura_num'],
@@ -142,7 +155,13 @@ class SalmonResultController extends Controller
                     'death' => $playerResult['dead_count'],
                     'special_id' => (int) $playerResult['special']['id'],
                     'boss_elimination_count' => array_sum($bossKillCounts),
-                ]);
+                ];
+
+                if ($playerResult['pid'] === $uploaderPlayerId) {
+                    $salmonPlayerResult['grade_point'] = Helper::convertGradePoint($job);
+                }
+
+                SalmonPlayerResult::create($salmonPlayerResult);
 
                 // updateOrCreate can't be used as upsert here.
                 $updateplayerNamesQuery = <<<QUERY
@@ -192,7 +211,7 @@ QUERY;
                 }
             }
 
-            $user->player_id = $jobPlayerId;
+            $user->player_id = $uploaderPlayerId;
             $user->save();
 
             return [
@@ -229,19 +248,19 @@ QUERY;
 
         // TODO:
         foreach ($request->input('results') as $job) {
-            $jobPlayerId = $job['my_result']['pid'];
-            $associatedUser = \App\User::where('player_id', $jobPlayerId)
+            $uploaderPlayerId = $job['my_result']['pid'];
+            $associatedUser = \App\User::where('player_id', $uploaderPlayerId)
                 ->first();
 
             if ($associatedUser && $user->id !== $associatedUser->id) {
                 abort(403, "Player `{$associatedUser->id}` is associated with different user.");
             }
-            elseif ($user->player_id && $user->player_id !== $jobPlayerId) {
+            elseif ($user->player_id && $user->player_id !== $uploaderPlayerId) {
                 abort(403, 'You cannot upload different player\'s result.');
             }
 
             try {
-                $results[] = DB::transaction($this->createRecords($job, $user, $jobPlayerId));
+                $results[] = DB::transaction($this->createRecords($job, $user, $uploaderPlayerId));
             }
             catch (\Exception $e) {
                 Log::error($e);
