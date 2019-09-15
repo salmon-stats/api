@@ -16,6 +16,13 @@ class SalmonScheduleController extends Controller
 
     public function index(Request $request)
     {
+        return \App\SalmonSchedule
+            ::orderBy('schedule_id', 'desc')
+            ->paginate(15);
+    }
+
+    public function show(Request $request)
+    {
         $isRequestingResults = $request->route()->getName() === 'schedules.results';
         return $this->repository->get($request->schedule_id, $isRequestingResults);
     }
