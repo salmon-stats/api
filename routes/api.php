@@ -83,8 +83,9 @@ Route::get('/players/{player_id}/results', 'SalmonResultController@index')->name
 Route::get('/players/{player_id}/results/latest', 'SalmonResultController@show')->name('players.results.latest');
 
 // Schedules routes
-Route::get('/schedules/{schedule_id}','SalmonScheduleController@index')->name('schedules.summary');
-Route::get('/schedules/{schedule_id}/results','SalmonScheduleController@index')->name('schedules.results');
+Route::get('/schedules/{schedule_id}','SalmonScheduleController@show')->name('schedules.summary');
+Route::get('/schedules/{schedule_id}/metadata','SalmonScheduleMetadata')->name('schedules.metadata');
+Route::get('/schedules/{schedule_id}/results','SalmonScheduleController@show')->name('schedules.results');
 
 /*
  * Endpoints requires authentication
