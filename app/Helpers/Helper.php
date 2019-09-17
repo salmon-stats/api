@@ -11,6 +11,15 @@ class Helper
         return ($job['grade']['id'] - 1) * 100 + $job['grade_point'];
     }
 
+    public static function escapeLike(string $value, string $char = '\\'): string
+    {
+        return str_replace(
+            [$char, '%', '_'],
+            [$char.$char, $char.'%', $char.'_'],
+            $value,
+        );
+    }
+
     public static function generateApiToken()
     {
         $token = random_bytes(60);

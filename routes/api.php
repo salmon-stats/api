@@ -77,6 +77,7 @@ Route::get('/players/{screen_name}', function (Request $request, string $screenN
 
     return app()->call('App\Http\Controllers\SalmonPlayerController@index');
 })->where('screen_name', '^@\w{1,15}');
+Route::get('/players/search', 'SalmonSearchController@player')->name('players.search');
 Route::get('/players/metadata', 'SalmonPlayerMetadata')->name('players.metadata');
 Route::get('/players/{player_id}', 'SalmonPlayerController@index')->name('players.summary');
 Route::get('/players/{player_id}/results', 'SalmonResultController@index')->name('players.results');
