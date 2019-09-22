@@ -66,7 +66,7 @@ class SalmonPlayerMetadata extends Controller
             return $metadata;
         }
         else {
-            DB::table('salmon_player_names')
+            return DB::table('salmon_player_names')
                 ->select(
                     DB::raw('COALESCE(users.name, salmon_player_names.name) AS name'),
                     DB::raw('CASE WHEN users.name IS NULL THEN FALSE ELSE TRUE END AS is_registered'),
