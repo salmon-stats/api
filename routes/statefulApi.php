@@ -9,14 +9,14 @@
 |
 */
 
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 Route::get('/auth/twitter', 'Auth\TwitterAuthController@redirectToProvider');
 Route::get('/auth/twitter/callback', 'Auth\TwitterAuthController@handleProviderCallback');
 Route::get('/auth/twitter/logout', 'Auth\TwitterAuthController@logout');
 
 Route::get('/metadata', function (Request $request) {
-    $user = $request::user();
+    $user = $request->user();
 
     if ($user) {
         $user->addHidden(['created_at', 'updated_at']);
@@ -37,15 +37,20 @@ Route::get('/metadata', function (Request $request) {
 Route::post('/upload-results', 'SalmonResultController@store');
 
 Route::get('/api-token', function (Request $request) {
-    $user = $request::user();
+    $user = $request->user();
 
     if (empty($user)) {
         abort(401);
     }
 
-    $newApiToken = \App\Helpers\Helper::generateApiToken();
-    $user->api_token = $newApiToken;
-    $user->save();
+    if ($request->query('regenerate') === 'true') {
+        $apiToken = \App\Helpers\Helper::generateApiToken();
+        $user->api_token = $apiToken;
+        $user->save();
+    }
+    else {
+        $apiToken = $user->api_token;
+    }
 
-    return ['api_token' => $newApiToken];
+    return ['api_token' => $apiToken];
 });
