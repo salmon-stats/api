@@ -21,6 +21,7 @@ class IndexResultUsecase
         if (!is_null($playerId)) {
             $salmonPlayerResults = new SalmonPlayerResult();
             return $salmonPlayerResults
+                ->with(['weapons'])
                 ->select(
                     '*',
                     'salmon_results.boss_elimination_count as boss_elimination_count',
