@@ -82,6 +82,7 @@ Route::get('/players/metadata', 'SalmonPlayerMetadata')->name('players.metadata'
 Route::get('/players/{player_id}', 'SalmonPlayerController@index')->name('players.summary');
 Route::get('/players/{player_id}/results', 'SalmonResultController@index')->name('players.results');
 Route::get('/players/{player_id}/results/latest', 'SalmonResultController@show')->name('players.results.latest');
+Route::get('/players/{player_id}/schedules', 'SalmonPlayerScheduleController@index')->name('players.schedules');
 
 // Schedules routes
 Route::get('/schedules','SalmonScheduleController@index')->name('schedules');
