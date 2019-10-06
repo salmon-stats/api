@@ -54,7 +54,8 @@ class SalmonResultController extends Controller
             $wavesCleared = $failReason ? $job['job_result']['failure_wave'] - 1 : 3; // TODO: Don't use magic number
 
             $existingSalmonResult =
-                SalmonResult::where('start_at', '>', Carbon::parse($job['play_time'] - 60))
+                SalmonResult::lockForUpdate()
+                    ->where('start_at', '>', Carbon::parse($job['play_time'] - 60))
                     ->where('start_at', '<', Carbon::parse($job['play_time'] + 60))
                     // Note: [1] can match with [1,2] but start_at makes it identical
                     ->whereJsonContains('members', $memberIds)
@@ -246,7 +247,7 @@ QUERY;
             abort(400, $e->getMessage());
         }
 
-        // TODO:
+
         foreach ($request->input('results') as $job) {
             $uploaderPlayerId = $job['my_result']['pid'];
             $associatedUser = \App\User::where('player_id', $uploaderPlayerId)
