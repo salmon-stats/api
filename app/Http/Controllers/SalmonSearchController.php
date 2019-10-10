@@ -9,11 +9,24 @@ class SalmonSearchController extends Controller
 {
     public function player(Request $request)
     {
-        $query = '%' . Helper::escapeLike($request->query('name')) . '%';
+        $screenNameQuery = Helper::escapeLike($request->query('name')) . '%';
+        $nameQuery = '%' . $screenNameQuery;
 
-        return \App\SalmonPlayerName::where('name', 'LIKE', $query)
+        $names = \App\SalmonPlayerName::where('name', 'LIKE', $nameQuery)
             ->limit(25)
             ->orderBy('updated_at', 'desc')
             ->get();
+
+
+        $registeredUsers = \App\User::where('name', 'LIKE', $screenNameQuery)
+            ->whereNotNull('player_id')
+            ->limit(25)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return [
+            'names' => $names,
+            'users' => $registeredUsers,
+        ];
     }
 }

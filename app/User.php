@@ -16,7 +16,7 @@ class User extends Authenticatable
     ];
 
     protected $hidden = [
-        'api_token', 'twitter_id',
+        'api_token', 'created_at', 'twitter_id',
     ];
 
     /**
