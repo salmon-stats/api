@@ -268,6 +268,8 @@ QUERY;
             }
         }
 
+        \Auth::user()->touch();
+
         return response()->json($results);
     }
 
