@@ -27,6 +27,8 @@ class SalmonPlayerScheduleController extends Controller
         salmon_schedules.*
         QUERY))
             ->where('player_id', $request->player_id)
+            ->where('salmon_results.golden_egg_delivered', '!=', 0)
+            ->where('salmon_results.power_egg_collected', '!=', 0)
             ->join('salmon_results', 'salmon_results.id', '=', 'salmon_player_results.salmon_id')
             ->join('salmon_schedules', 'salmon_schedules.schedule_id', '=', 'salmon_results.schedule_id')
             ->groupBy('salmon_results.schedule_id')
@@ -82,6 +84,8 @@ QUERY;
 
         $globalTeamSummary = SalmonResult::where('schedule_id', $scheduleId)
             ->select(DB::raw($globalTeamSummaryQuery))
+            ->where('salmon_results.golden_egg_delivered', '!=', 0)
+            ->where('salmon_results.power_egg_collected', '!=', 0)
             ->get();
 
         $globalPlayerSummaryQuery = <<<QUERY
@@ -103,7 +107,9 @@ SELECT
     INNER JOIN salmon_player_boss_eliminations ON
         salmon_player_boss_eliminations.salmon_id = salmon_results.id AND
         salmon_player_boss_eliminations.player_id = salmon_player_results.player_id
-    WHERE schedule_id = ?
+    WHERE schedule_id = ? AND
+        salmon_results.golden_egg_delivered != 0 AND
+        salmon_results.power_egg_collected != 0
 QUERY;
 
         $globalPlayerSummary = DB::select($globalPlayerSummaryQuery, [
@@ -130,6 +136,8 @@ QUERY;
         $summary = SalmonResult::where('schedule_id', $scheduleId)
             ->whereJsonContains('members', $request->player_id)
             ->select(DB::raw($summaryQuery))
+            ->where('salmon_results.golden_egg_delivered', '!=', 0)
+            ->where('salmon_results.power_egg_collected', '!=', 0)
             ->first()
             ->toArray();
 
@@ -159,7 +167,9 @@ SELECT
         salmon_player_boss_eliminations.player_id = salmon_player_results.player_id
     WHERE
         schedule_id = ? AND
-        json_contains(members, ?)
+        json_contains(members, ?) AND
+        salmon_results.golden_egg_delivered != 0 AND
+        salmon_results.power_egg_collected != 0
     GROUP BY is_myself
     ORDER BY is_myself ASC
 QUERY;
