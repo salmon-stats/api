@@ -188,6 +188,8 @@ QUERY;
             ->collapse()
             ->toArray();
 
+        $results = app()->call('App\Http\Controllers\SalmonResultController@index');
+
         return [
             'global' => array_merge(
                 $globalTeamSummary[0]->toArray(),
@@ -198,6 +200,7 @@ QUERY;
                 $scores,
             ),
             'weapons' => $weapons,
+            'results' => $results->items(),
         ];
    }
 }
