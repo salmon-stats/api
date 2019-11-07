@@ -25,7 +25,6 @@ class SalmonResult extends Model
         return collect($this->members)->map(function ($playerId) {
             // TODO: optimize query
             $user = \App\User::where('player_id', $playerId)
-                ->select(\App\User::getRawSelectQuery())
                 ->first();
 
             if (empty($user)) {

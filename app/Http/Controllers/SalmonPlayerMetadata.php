@@ -17,7 +17,13 @@ class SalmonPlayerMetadata extends Controller
             abort(400);
         }
 
-        $selectQuery = \App\User::getRawSelectQuery(true);
+        $selectQuery = [
+            DB::raw('COALESCE(users.display_name, users.name, salmon_player_names.name) AS name'),
+            DB::raw('CASE WHEN users.name IS NULL THEN FALSE ELSE TRUE END AS is_registered'),
+            DB::raw('users.display_name IS NOT NULL AS is_custom_name'),
+            DB::raw('CASE WHEN show_twitter_avatar = 1 THEN users.twitter_avatar ELSE NULL END AS twitter_avatar'),
+            'salmon_player_names.player_id AS player_id',
+        ];
 
         if (count($ids) === 1) {
             // TODO: cache
