@@ -25,9 +25,7 @@ class PrivacySettingsController extends Controller
             $user->display_name = null;
         }
 
-        if ($request->show_twitter_avatar) {
-            $user->show_twitter_avatar = $request->show_twitter_avatar;
-        }
+        $user->show_twitter_avatar = $request->show_twitter_avatar ?? true;
 
         $user->save();
 
