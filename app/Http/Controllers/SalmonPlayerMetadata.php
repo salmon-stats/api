@@ -17,18 +17,15 @@ class SalmonPlayerMetadata extends Controller
             abort(400);
         }
 
+        $selectQuery = \App\User::getRawSelectQuery(true);
+
         if (count($ids) === 1) {
             // TODO: cache
             $id = $ids[0];
 
             $metadata = DB::table('salmon_player_names')
                 ->leftJoin('users', 'users.player_id', '=', 'salmon_player_names.player_id')
-                ->select(
-                    DB::raw('COALESCE(users.name, salmon_player_names.name) AS name'),
-                    DB::raw('CASE WHEN users.name IS NULL THEN FALSE ELSE TRUE END AS is_registered'),
-                    'users.twitter_avatar',
-                    'salmon_player_names.player_id AS player_id',
-                )
+                ->select(...$selectQuery)
                 ->where('salmon_player_names.player_id', $id)
                 ->get()
                 ->toArray();
@@ -67,13 +64,8 @@ class SalmonPlayerMetadata extends Controller
         }
         else {
             return DB::table('salmon_player_names')
-                ->select(
-                    DB::raw('COALESCE(users.name, salmon_player_names.name) AS name'),
-                    DB::raw('CASE WHEN users.name IS NULL THEN FALSE ELSE TRUE END AS is_registered'),
-                    'users.twitter_avatar',
-                    'salmon_player_names.player_id AS player_id',
-                )
-                ->whereIn('salmon_player_names.player_id', $ids)
+            ->select(...$selectQuery)
+            ->whereIn('salmon_player_names.player_id', $ids)
                 ->leftJoin('users', 'users.player_id', '=', 'salmon_player_names.player_id')
                 ->limit(self::MAX_IDS_PER_REQUEST)
                 ->get();
