@@ -20,7 +20,6 @@ class SalmonSearchController extends Controller
 
         $registeredUsers = \App\User::where('name', 'LIKE', $screenNameQuery)
             ->whereNotNull('player_id')
-            ->select(\App\User::getRawSelectQuery())
             ->limit(25)
             ->orderBy('updated_at', 'desc')
             ->get();
