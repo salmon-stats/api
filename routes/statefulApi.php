@@ -18,10 +18,6 @@ Route::get('/auth/twitter/logout', 'Auth\TwitterAuthController@logout');
 Route::get('/metadata', function (Request $request) {
     $user = $request->user();
 
-    if ($user) {
-        $user->addHidden(['created_at', 'updated_at']);
-    }
-
     $schedules = \App\SalmonSchedule::whereRaw('TIMESTAMPADD(WEEK, -1, CURRENT_TIMESTAMP) < schedule_id')
         ->whereRaw('schedule_id < TIMESTAMPADD(WEEK, 1, CURRENT_TIMESTAMP)')
         ->get();
@@ -33,6 +29,8 @@ Route::get('/metadata', function (Request $request) {
 
     return $response;
 });
+
+Route::post('/settings/privacy', 'PrivacySettingsController');
 
 Route::post('/upload-results', 'SalmonResultController@store');
 
