@@ -10,6 +10,8 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    protected $appends = ['is_custom_name'];
+
     protected $casts = [
         'show_twitter_avatar' => 'boolean',
     ];
@@ -34,13 +36,18 @@ class User extends Authenticatable
         return null;
     }
 
+    public function getIsCustomNameAttribute()
+    {
+        return !is_null($this->display_name);
+    }
+
     public function getNameAttribute()
     {
         if ($this->display_name) {
             return $this->display_name;
         }
 
-        return $this->name;
+        return $this->getOriginal('name');
     }
 
     public function getTwitterAvatarAttribute()
