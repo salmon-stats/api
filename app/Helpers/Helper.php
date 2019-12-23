@@ -48,6 +48,12 @@ class Helper
     {
         if (is_null($scheduleId)) return null;
 
+        if ($scheduleId === 'now') {
+            return \App\SalmonSchedule::latest('schedule_id')
+                ->first()
+                ->schedule_id;
+        }
+
         return Carbon::createFromFormat('YmdH', $scheduleId)->format('Y-m-d H:i:s');
     }
 }
