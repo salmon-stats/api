@@ -71,10 +71,9 @@ wave_results AS (
         INNER JOIN salmon_waves ON salmon_ids.id = salmon_waves.salmon_id
 ),
 water_x_event AS (
-    SELECT water_level_ids.id AS water_id, salmon_events.id AS event_id
+    SELECT salmon_water_levels.id AS water_id, salmon_events.id AS event_id
         FROM salmon_events
-    CROSS JOIN
-    (SELECT salmon_water_levels.id FROM salmon_water_levels) AS water_level_ids
+    CROSS JOIN salmon_water_levels
 ),
 records AS (
     SELECT
