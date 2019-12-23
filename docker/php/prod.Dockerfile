@@ -1,4 +1,4 @@
-FROM php:7.3.8-fpm-alpine3.9
+FROM php:7.4.1-fpm-alpine3.10
 
 COPY . /var/www/html
 
