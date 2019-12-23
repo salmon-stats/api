@@ -1,9 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\SalmonResult;
-use App\Http\Controllers\SalmonResultController;
-use App\Http\Controllers\ScheduleRecordController;
 use App\User;
 use App\Helpers\Helper;
 
@@ -89,8 +86,9 @@ Route::get('/players/{player_id}/schedules/{schedule_id}/results', 'SalmonResult
 // Schedules routes
 Route::get('/schedules','SalmonScheduleController@index')->name('schedules');
 Route::get('/schedules/{schedule_id}','SalmonScheduleController@show')->name('schedules.summary');
-Route::get('/schedules/{schedule_id}/metadata','SalmonScheduleMetadata')->name('schedules.metadata');
+Route::get('/schedules/{schedule_id}/metadata','SalmonScheduleMetadata')->name('schedules.metadata'); # TODO: naming convention
 Route::get('/schedules/{schedule_id}/results','SalmonScheduleController@show')->name('schedules.results');
+Route::get('/schedules/{schedule_id}/stats','SalmonScheduleStatsController')->name('schedules.stats');
 
 /*
  * Endpoints requires authentication
