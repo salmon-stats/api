@@ -1,7 +1,5 @@
 FROM php:7.4.1-fpm-alpine3.10
 
-COPY . /var/www/html
-
 RUN docker-php-ext-install pdo_mysql
 
 RUN apk add --no-cache su-exec supervisor
@@ -15,5 +13,7 @@ RUN touch /var/log/cron.log
 WORKDIR /var/www/html
 
 COPY ./docker/php/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+COPY . /var/www/html
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
