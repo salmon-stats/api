@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\DB;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,8 +25,23 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule
+            ->call(function() {
+                $upcomingScheduleCount = \App\SalmonSchedule::where(
+                        'end_at',
+                        '>',
+                        DB::raw('NOW()'),
+                    )
+                    ->get()
+                    ->count();
+                $shouldFetchFutureSchedules = $upcomingScheduleCount < 2;
+
+                if ($shouldFetchFutureSchedules) {
+                    $salmonScheduleFetcher = new \App\Helpers\SalmonScheduleFetcher();
+                    $salmonScheduleFetcher->fetchFutureSchedules();
+                }
+            })
+            ->everyFiveMinutes();
     }
 
     /**

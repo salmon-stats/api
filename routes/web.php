@@ -12,5 +12,5 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect(env('APP_FRONTEND_ORIGIN'));
 });

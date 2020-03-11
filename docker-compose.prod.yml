@@ -1,0 +1,37 @@
+version: '3'
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/prod.Dockerfile
+    depends_on:
+      - app
+    ports:
+      - 80:80
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/prod.Dockerfile
+    volumes:
+      - ./storage:/var/www/html/storage
+    expose:
+      - '9000'
+
+  mysql:
+    restart: always
+    image: mysql:8.0.16
+    volumes:
+      - ./docker/mysql:/etc/mysql/conf.d
+      - mysqldata:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    expose:
+      - '3306'
+
+volumes:
+  mysqldata:
+    driver: "local"

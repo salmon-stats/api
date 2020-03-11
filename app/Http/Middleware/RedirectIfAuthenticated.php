@@ -18,7 +18,8 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         if (Auth::guard($guard)->check()) {
-            return redirect('/home');
+            $user = Auth::user();
+            return redirect($user->getPlayerPage() ?? env('APP_FRONTEND_ORIGIN'));
         }
 
         return $next($request);

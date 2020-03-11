@@ -2,7 +2,8 @@ version: '3'
 services:
   nginx:
     build:
-      context: ./docker/nginx
+      context: .
+      dockerfile: ./docker/nginx/dev.Dockerfile
     depends_on:
       - app
     ports:
@@ -11,9 +12,11 @@ services:
       - .:/var/www/html
 
   app:
-    build: ./docker/php
-    ports:
-      - 9000:9000
+    build:
+      context: ./docker/php
+      dockerfile: dev.Dockerfile
+    expose:
+      - '9000'
     volumes:
       - .:/var/www/html
 
