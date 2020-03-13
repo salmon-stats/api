@@ -41,7 +41,7 @@ class IndexResultUsecase
                 $results = $results->where('schedule_id', $scheduleTimestamp);
             }
 
-            $results->orderBy('id', 'desc');
+            $results = $results->orderBy('id', 'desc');
         }
 
         if (isset($query['is_cleared'])) {
