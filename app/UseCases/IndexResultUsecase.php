@@ -22,12 +22,14 @@ class IndexResultUsecase
 
             $results = $results
                 ->with(['weapons'])
+                ->distinct('salmon_results.id')
                 ->select(
-                    '*',
+                    'salmon_player_results.*',
+                    'salmon_results.*',
                     'salmon_results.boss_elimination_count as boss_elimination_count',
                     'salmon_player_results.boss_elimination_count as player_boss_elimination_count',
                 )
-                ->where('player_id', $playerId);
+                ->where('salmon_player_results.player_id', $playerId);
 
             if (!is_null($scheduleTimestamp)) {
                 $results = $results->where('schedule_id', $scheduleTimestamp);
@@ -80,6 +82,13 @@ class IndexResultUsecase
                 'player_min_power_egg' => buildMin('power_eggs'),
                 'player_max_power_egg' => buildMax('power_eggs'),
                 'special' => buildWhere('special_id', '='),
+                'weapons' => fn ($results, $value) => $results
+                    ->join('salmon_player_weapons', function ($join) use ($value) {
+                        $join
+                            ->on('salmon_player_weapons.player_id', 'salmon_player_results.player_id')
+                            ->on('salmon_player_weapons.salmon_id', 'salmon_results.id')
+                            ->whereIn('weapon_id', explode(',', $value));
+                    }),
             ];
         }
 
