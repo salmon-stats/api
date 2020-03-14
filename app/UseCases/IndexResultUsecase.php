@@ -73,6 +73,16 @@ class IndexResultUsecase
                 ->whereIn('stage_id', explode(',', $value)),
         ];
 
+        if ($results->getModel() instanceof SalmonPlayerResult) {
+            $filters += [
+                'player_min_golden_egg' => buildMin('golden_eggs'),
+                'player_max_golden_egg' => buildMax('golden_eggs'),
+                'player_min_power_egg' => buildMin('power_eggs'),
+                'player_max_power_egg' => buildMax('power_eggs'),
+                'special' => buildWhere('special_id', '='),
+            ];
+        }
+
         foreach ($filters as $key => $filter) {
             if (isset($query[$key])) {
                 $results = $filter($results, $query[$key]);
