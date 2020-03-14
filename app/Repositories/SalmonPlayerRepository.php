@@ -16,10 +16,12 @@ class SalmonPlayerRepository
 
         $user = User::where('player_id', $playerId)->first();
         $results = app()->call('App\Http\Controllers\SalmonResultController@index');
+        $weapons = app()->call('App\Http\Controllers\SalmonPlayerWeaponController@__invoke');
 
         return [
             'user' => $user,
             'results' => $results->items(),
+            'weapons' => $weapons,
         ];
     }
 }
