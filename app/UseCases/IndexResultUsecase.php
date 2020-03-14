@@ -53,6 +53,9 @@ class IndexResultUsecase
             'max_golden_egg' => fn ($results, $value) => $results->where('golden_egg_delivered', '<', $value),
             'min_power_egg' => fn ($results, $value) => $results->where('power_egg_collected', '>', $value),
             'max_power_egg' => fn ($results, $value) => $results->where('power_egg_collected', '<', $value),
+            'stages' => fn ($results, $value) => $results
+                ->join('salmon_schedules', 'salmon_schedules.schedule_id', '=', 'salmon_results.schedule_id')
+                ->whereIn('stage_id', explode(',', $value)),
         ];
 
         foreach ($filters as $key => $filter) {
