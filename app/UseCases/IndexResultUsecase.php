@@ -44,21 +44,21 @@ class IndexResultUsecase
             $results = $results->orderBy('id', 'desc');
         }
 
-        if (isset($query['is_cleared'])) {
-            $operator = $query['is_cleared'] === 'true' ? '=' : '<';
-            $results = $results->where('clear_waves', $operator, 3);
-        }
-        if (isset($query['min_golden_egg'])) {
-            $results = $results->where('golden_egg_delivered', '>', $query['min_golden_egg']);
-        }
-        if (isset($query['max_golden_egg'])) {
-            $results = $results->where('golden_egg_delivered', '<', $query['max_golden_egg']);
-        }
-        if (isset($query['min_power_egg'])) {
-            $results = $results->where('power_egg_collected', '>', $query['min_power_egg']);
-        }
-        if (isset($query['max_power_egg'])) {
-            $results = $results->where('power_egg_collected', '<', $query['max_power_egg']);
+        $filters = [
+            'is_cleared' => function($results, $value) {
+                $operator = $value === 'true' ? '=' : '<';
+                return $results->where('clear_waves', $operator, 3);
+            },
+            'min_golden_egg' => fn($results, $value) => $results->where('golden_egg_delivered', '>', $value),
+            'max_golden_egg' => fn ($results, $value) => $results->where('golden_egg_delivered', '<', $value),
+            'min_power_egg' => fn ($results, $value) => $results->where('power_egg_collected', '>', $value),
+            'max_power_egg' => fn ($results, $value) => $results->where('power_egg_collected', '<', $value),
+        ];
+
+        foreach ($filters as $key => $filter) {
+            if (isset($query[$key])) {
+                $results = $filter($results, $query[$key]);
+            }
         }
 
         return $results->paginate($perPage);
