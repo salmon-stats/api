@@ -22,12 +22,14 @@ class IndexResultUsecase
 
             $results = $results
                 ->with(['weapons'])
+                ->distinct('salmon_results.id')
                 ->select(
-                    '*',
+                    'salmon_player_results.*',
+                    'salmon_results.*',
                     'salmon_results.boss_elimination_count as boss_elimination_count',
                     'salmon_player_results.boss_elimination_count as player_boss_elimination_count',
                 )
-                ->where('player_id', $playerId);
+                ->where('salmon_player_results.player_id', $playerId);
 
             if (!is_null($scheduleTimestamp)) {
                 $results = $results->where('schedule_id', $scheduleTimestamp);
@@ -44,16 +46,51 @@ class IndexResultUsecase
             $results = $results->orderBy('id', 'desc');
         }
 
+        function buildWhere($column, $operator)
+        {
+            return fn ($results, $value) => $results->where($column, $operator, $value);
+        }
+
+        function buildMin($column)
+        {
+            return buildWhere($column, '>=');
+        }
+
+        function buildMax($column)
+        {
+            return buildWhere($column, '<=');
+        }
+
         $filters = [
             'is_cleared' => function($results, $value) {
                 $operator = $value === 'true' ? '=' : '<';
                 return $results->where('clear_waves', $operator, 3);
             },
-            'min_golden_egg' => fn($results, $value) => $results->where('golden_egg_delivered', '>', $value),
-            'max_golden_egg' => fn ($results, $value) => $results->where('golden_egg_delivered', '<', $value),
-            'min_power_egg' => fn ($results, $value) => $results->where('power_egg_collected', '>', $value),
-            'max_power_egg' => fn ($results, $value) => $results->where('power_egg_collected', '<', $value),
+            'min_golden_egg' => buildMin('golden_egg_delivered'),
+            'max_golden_egg' => buildMax('golden_egg_delivered'),
+            'min_power_egg' => buildMin('power_egg_collected'),
+            'max_power_egg' => buildMax('power_egg_collected'),
+            'stages' => fn ($results, $value) => $results
+                ->join('salmon_schedules', 'salmon_schedules.schedule_id', '=', 'salmon_results.schedule_id')
+                ->whereIn('stage_id', explode(',', $value)),
         ];
+
+        if ($results->getModel() instanceof SalmonPlayerResult) {
+            $filters += [
+                'player_min_golden_egg' => buildMin('golden_eggs'),
+                'player_max_golden_egg' => buildMax('golden_eggs'),
+                'player_min_power_egg' => buildMin('power_eggs'),
+                'player_max_power_egg' => buildMax('power_eggs'),
+                'special' => buildWhere('special_id', '='),
+                'weapons' => fn ($results, $value) => $results
+                    ->join('salmon_player_weapons', function ($join) use ($value) {
+                        $join
+                            ->on('salmon_player_weapons.player_id', 'salmon_player_results.player_id')
+                            ->on('salmon_player_weapons.salmon_id', 'salmon_results.id')
+                            ->whereIn('weapon_id', explode(',', $value));
+                    }),
+            ];
+        }
 
         foreach ($filters as $key => $filter) {
             if (isset($query[$key])) {
