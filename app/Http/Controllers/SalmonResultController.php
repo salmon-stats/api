@@ -212,8 +212,18 @@ QUERY;
                 }
             }
 
-            $user->player_id = $uploaderPlayerId;
-            $user->save();
+            $account = \App\UserAccount::firstOrNew([
+                'player_id' => $uploaderPlayerId,
+                'user_id' => $user->id,
+            ]);
+
+            if (!$account->exists) {
+                $hasOtherAccount = \App\UserAccount::where('user_id', $user->id)
+                    ->where('is_primary', true)
+                    ->exists();
+                $account->is_primary = !$hasOtherAccount;
+                $account->save();
+            }
 
             return [
                 'created' => true,
@@ -250,14 +260,11 @@ QUERY;
 
         foreach ($request->input('results') as $job) {
             $uploaderPlayerId = $job['my_result']['pid'];
-            $associatedUser = \App\User::where('player_id', $uploaderPlayerId)
+            $associatedUser = \App\UserAccount::where('player_id', $uploaderPlayerId)
                 ->first();
 
-            if ($associatedUser && $user->id !== $associatedUser->id) {
-                abort(403, "Player `{$associatedUser->id}` is associated with different user.");
-            }
-            elseif ($user->player_id && $user->player_id !== $uploaderPlayerId) {
-                abort(403, 'You cannot upload different player\'s result.');
+            if ($associatedUser && $user->id !== $associatedUser->user_id) {
+                abort(403, "Player `{$associatedUser->user_id}` is associated with different user.");
             }
 
             try {
