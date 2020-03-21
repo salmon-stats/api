@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 use Swaggest\JsonSchema\Schema;
@@ -66,8 +67,9 @@ class UploadSalmonResultTest extends TestCase
             true
         );
 
+        $pid1 = Str::random(16);
         $splatnetJson['play_time'] = \Carbon\Carbon::now()->timestamp;
-        $splatnetJson['my_result']['pid'] = $testUser->player_id;
+        $splatnetJson['my_result']['pid'] = $pid1;
 
         $payload = ['results' => [$splatnetJson]];
 
@@ -80,10 +82,11 @@ class UploadSalmonResultTest extends TestCase
                 ],
             ]);
 
-        $this->assertEquals(
-            $splatnetJson['my_result']['pid'],
-            $testUser->player_id,
-            '$testUser->player_id should be updated',
+        $this->assertTrue(
+            \App\UserAccount::where('player_id', $pid1)
+                ->where('is_primary', true)
+                ->exists(),
+            'primary account should be created.',
         );
 
         // Uploading same result twice should be impossible
@@ -95,12 +98,19 @@ class UploadSalmonResultTest extends TestCase
                 ],
             ]);
 
-        // Once associated with player_id, you cannot upload result with different player_id
-        // Note that acutual player_id is always [a-f0-9]{16}
+        // Uploading different player's result creates new non-primary account.
         $payload2 = $payload;
-        $payload2['results'][0]['my_result']['pid'] = 'non-associated';
+        $pid2 = Str::random(16);
+        $payload2['results'][0]['my_result']['pid'] = $pid2;
         $failedResponse2 = $testUserRequest->postJson('/api/results', $payload2);
-        $failedResponse2->assertStatus(403);
+        $failedResponse2->assertStatus(200);
+
+        $this->assertTrue(
+            \App\UserAccount::where('player_id', $pid2)
+                ->where('is_primary', false)
+                ->exists(),
+            'non-primary account should be created.',
+        );
 
         // Only associated user can upload
         $payload3 = $payload;

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\SalmonResult;
 use App\User;
+use App\UserAccount;
 
 class SalmonPlayerRepository
 {
@@ -14,7 +15,9 @@ class SalmonPlayerRepository
             abort(404, "Player `$playerId` has no record.");
         }
 
-        $user = User::where('player_id', $playerId)->first();
+        $user = User::join('user_accounts', 'user_accounts.user_id', 'users.id')
+            ->where('player_id', $playerId)
+            ->first();
         $results = app()->call('App\Http\Controllers\SalmonResultController@index');
         $weapons = app()->call('App\Http\Controllers\SalmonPlayerWeaponController@__invoke');
 

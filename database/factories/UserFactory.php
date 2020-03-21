@@ -19,7 +19,6 @@ $factory->define(User::class, function (Faker $faker) {
     return [
         'name' => $faker->regexify('[a-z\d_]{3,15}'),
         'twitter_id' => $faker->randomNumber(8),
-        'player_id' => 'FAKE' . $faker->regexify('[a-z\d]{12}'),
         'api_token' => \App\Helpers\Helper::generateApiToken(),
     ];
 });
