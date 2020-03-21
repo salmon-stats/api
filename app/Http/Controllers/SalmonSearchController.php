@@ -17,9 +17,12 @@ class SalmonSearchController extends Controller
             ->orderBy('updated_at', 'desc')
             ->get();
 
-
-        $registeredUsers = \App\User::where('name', 'LIKE', $screenNameQuery)
+        $registeredUsers = \App\User::where(fn ($q) => $q
+            ->where('name', 'LIKE', $screenNameQuery)
+            ->orWhere('display_name', 'LIKE', $screenNameQuery)
+        )
             ->whereNotNull('player_id')
+            ->join('user_accounts', 'user_accounts.user_id', '=', 'users.id')
             ->limit(25)
             ->orderBy('updated_at', 'desc')
             ->get();

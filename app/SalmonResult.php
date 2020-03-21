@@ -24,7 +24,8 @@ class SalmonResult extends Model
     public function getMemberAccountsAttribute() {
         return collect($this->members)->map(function ($playerId) {
             // TODO: optimize query
-            $user = \App\User::where('player_id', $playerId)
+            $user = \App\User::join('user_accounts', 'user_accounts.user_id', '=', 'users.id')
+                ->where('player_id', $playerId)
                 ->first();
 
             if (empty($user)) {
