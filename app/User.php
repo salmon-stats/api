@@ -26,6 +26,11 @@ class User extends Authenticatable
         'api_token', 'created_at', 'twitter_id', 'display_name', 'show_twitter_avatar',
     ];
 
+    public function accounts()
+    {
+        return $this->hasMany('App\UserAccount', 'user_id');
+    }
+
     /**
      * Returns player page if the user has uploaded result at least once.
      * Otherwise returns null.
