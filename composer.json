@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "salmon-stats-api",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "API used by Salmon Stats and Salmonia.",
     "keywords": [
         "framework",
         "laravel"
