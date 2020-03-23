@@ -30,15 +30,14 @@ class SalmonPlayerMetadata extends Controller
             $id = $ids[0];
 
             $metadata = DB::table('salmon_player_names')
-                ->join('user_accounts', 'user_accounts.player_id', '=', 'salmon_player_names.player_id')
-                ->join('users', 'users.id', '=', 'user_accounts.user_id')
+                ->leftJoin('user_accounts', 'user_accounts.player_id', '=', 'salmon_player_names.player_id')
+                ->leftJoin('users', 'users.id', '=', 'user_accounts.user_id')
                 ->select(...$selectQuery)
                 ->where('salmon_player_names.player_id', $id)
                 ->get()
                 ->toArray();
 
             $metadata[0]->total = DB::table('salmon_player_results')
-                ->join('user_accounts', 'user_accounts.player_id', '=', 'salmon_player_results.player_id')
                 ->select(
                     DB::raw('CONVERT(SUM(golden_eggs), UNSIGNED) as golden_eggs'),
                     DB::raw('CONVERT(SUM(power_eggs), UNSIGNED) as power_eggs'),
@@ -46,18 +45,16 @@ class SalmonPlayerMetadata extends Controller
                     DB::raw('CONVERT(SUM(death), UNSIGNED) as death'),
                     DB::raw('CONVERT(SUM(boss_elimination_count), UNSIGNED) as boss_elimination_count'),
                 )
-                ->where('user_accounts.player_id', $id)
+                ->where('salmon_player_results.player_id', $id)
                 ->first();
 
             $results = collect(DB::table('salmon_player_results')
                 ->join('salmon_results', 'salmon_results.id', '=', 'salmon_player_results.salmon_id')
-                ->join('user_accounts', 'user_accounts.player_id', '=', 'salmon_player_results.player_id')
-                ->join('users', 'users.id', '=', 'user_accounts.user_id')
                 ->select(
                     DB::raw('CASE WHEN fail_reason_id IS NULL THEN "clear" ELSE "fail" END as result'),
                     DB::raw('count(*) as count'),
                 )
-                ->where('user_accounts.player_id', $id)
+                ->where('salmon_player_results.player_id', $id)
                 ->groupBy('result')
                 ->get()
             );
