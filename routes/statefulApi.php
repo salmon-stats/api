@@ -16,7 +16,11 @@ Route::get('/auth/twitter/callback', 'Auth\TwitterAuthController@handleProviderC
 Route::get('/auth/twitter/logout', 'Auth\TwitterAuthController@logout');
 
 Route::get('/metadata', function (Request $request) {
-    $user = $request->user()->load('accounts');
+    $user = $request->user();
+
+    if (isset($user)) {
+        $user->load('accounts');
+    }
 
     $schedules = \App\SalmonSchedule::whereRaw('TIMESTAMPADD(WEEK, -1, CURRENT_TIMESTAMP) < schedule_id')
         ->whereRaw('schedule_id < TIMESTAMPADD(WEEK, 1, CURRENT_TIMESTAMP)')
