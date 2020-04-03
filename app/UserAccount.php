@@ -17,4 +17,9 @@ class UserAccount extends Model
     protected $casts = [
         'is_primary' => 'boolean',
     ];
+
+    public function name()
+    {
+        return $this->hasOne('App\SalmonPlayerName', 'player_id', 'player_id');
+    }
 }

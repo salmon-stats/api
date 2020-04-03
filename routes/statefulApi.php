@@ -19,7 +19,7 @@ Route::get('/metadata', function (Request $request) {
     $user = $request->user();
 
     if (isset($user)) {
-        $user->load('accounts');
+        $user->load('accounts', 'accounts.name');
     }
 
     $schedules = \App\SalmonSchedule::whereRaw('TIMESTAMPADD(WEEK, -1, CURRENT_TIMESTAMP) < schedule_id')

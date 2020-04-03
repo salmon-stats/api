@@ -28,7 +28,9 @@ class User extends Authenticatable
 
     public function accounts()
     {
-        return $this->hasMany('App\UserAccount', 'user_id');
+        return $this->hasMany('App\UserAccount', 'user_id')
+            ->orderBy('is_primary', 'DESC')
+            ->orderBy('player_id');
     }
 
     /**
