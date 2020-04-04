@@ -78,14 +78,25 @@ class IndexResultUsecase
             'sort_by' => function ($results, $value) use (&$orderByArgs, $query) {
                 $sortableColumns = [
                     'golden_egg_delivered',
+                    'player_golden_eggs',
                     'power_egg_collected',
+                    'player_power_eggs',
                 ];
 
                 if (!in_array($value, $sortableColumns)) {
                     return;
                 }
 
-                $order = $query['sort_by_order'];
+                $columnNameMap = [
+                    'player_golden_eggs' => 'golden_eggs',
+                    'player_power_eggs' => 'power_eggs',
+                ];
+
+                if (array_key_exists($value, $columnNameMap)) {
+                    $value = $columnNameMap[$value];
+                }
+
+                $order = $query['sort_by_order'] ?? 'desc';
                 $orderByArgs = [$value, $order];
 
                 // Exclude "水没厳選" (intentionally giving up early)
