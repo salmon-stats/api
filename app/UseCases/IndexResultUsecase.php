@@ -10,6 +10,7 @@ class IndexResultUsecase
     public function __invoke($playerId = null, $scheduleTimestamp = null, String $routeName, array $query = [])
     {
         $results = new SalmonResult();
+        $orderByArgs = [];
 
         if (preg_match('/\.summary$/', $routeName)) {
             $perPage = 10;
@@ -36,14 +37,15 @@ class IndexResultUsecase
             }
 
             $results = $results
-                ->join('salmon_results', 'salmon_results.id', '=', 'salmon_player_results.salmon_id')
-                ->orderBy('salmon_results.start_at', 'desc');
+                ->join('salmon_results', 'salmon_results.id', '=', 'salmon_player_results.salmon_id');
+
+            $orderByArgs = ['salmon_results.start_at', 'desc'];
         } else {
             if (!is_null($scheduleTimestamp)) {
                 $results = $results->where('schedule_id', $scheduleTimestamp);
             }
 
-            $results = $results->orderBy('id', 'desc');
+            $orderByArgs = ['id', 'desc'];
         }
 
         function buildWhere($column, $operator)
@@ -73,6 +75,26 @@ class IndexResultUsecase
             'stages' => fn ($results, $value) => $results
                 ->join('salmon_schedules', 'salmon_schedules.schedule_id', '=', 'salmon_results.schedule_id')
                 ->whereIn('stage_id', explode(',', $value)),
+            'sort_by' => function ($results, $value) use (&$orderByArgs, $query) {
+                $sortableColumns = [
+                    'golden_egg_delivered',
+                    'power_egg_collected',
+                ];
+
+                if (!in_array($value, $sortableColumns)) {
+                    return;
+                }
+
+                $order = $query['sort_by_order'];
+                $orderByArgs = [$value, $order];
+
+                // Exclude "水没厳選" (intentionally giving up early)
+                if ($order === 'asc') {
+                    if (in_array($value, ['golden_egg_delivered', 'power_egg_collected'])) {
+                        return $results->where('golden_egg_delivered', '>', 0);
+                    }
+                }
+            },
         ];
 
         if ($results->getModel() instanceof SalmonPlayerResult) {
@@ -94,8 +116,16 @@ class IndexResultUsecase
 
         foreach ($filters as $key => $filter) {
             if (isset($query[$key])) {
-                $results = $filter($results, $query[$key]);
+                $filterResult = $filter($results, $query[$key]);
+
+                if (isset($filterResult)) {
+                    $results = $filterResult;
+                }
             }
+        }
+
+        if (!empty($orderByArgs)) {
+            $results = $results->orderBy(...$orderByArgs);
         }
 
         return $results->paginate($perPage);
