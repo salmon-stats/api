@@ -13,4 +13,4 @@
 
 Route::get('/', function () {
     return redirect(env('APP_FRONTEND_ORIGIN'));
-});
+})->name('index');
