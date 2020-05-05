@@ -16,8 +16,20 @@ cp example.env .env
 vi .env
 
 docker-compose exec app bash
+composer install # TODO: move `composer install` to Dockerfile
 php artisan key:generate
 php artisan migrate
+
+# Fetch past Salmon Run schedules
+php artisan salmon-stats:fetch-schedules
+
+# Add **host** crontab
+* * * * * php /{path_to_project}/artisan schedule:run >> /dev/null 2>&1
+```
+
+## Running tests
+```sh
+docker-compose exec app vendor/bin/phpunit
 ```
 
 ## Start
