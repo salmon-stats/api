@@ -278,6 +278,12 @@ QUERY;
 
         \Auth::user()->touch();
 
+        if ($request->query('mode') === 'object') {
+            return response()->json([
+                'upload_results' => $results,
+            ]);
+        }
+
         return response()->json($results);
     }
 
