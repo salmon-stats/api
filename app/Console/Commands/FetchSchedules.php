@@ -33,7 +33,7 @@ class FetchSchedules extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int|null
      */
     public function handle()
     {

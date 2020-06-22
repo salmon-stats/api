@@ -1,5 +1,5 @@
 {
-    "name": "salmon-stats-api",
+    "name": "salmon_stats_api",
     "type": "project",
     "description": "API used by Salmon Stats and Salmonia.",
     "keywords": [
@@ -11,13 +11,13 @@
         "php": "^7.3",
         "awobaz/compoships": "^1.1",
         "fideloper/proxy": "^4.2",
+        "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
-        "laravel/framework": "^6.0",
+        "laravel/framework": "^7.0",
         "laravel/socialite": "^4.2",
-        "laravel/tinker": "^1.0",
+        "laravel/tinker": "^2.0",
         "mll-lab/laravel-graphql-playground": "^1.0",
         "nuwave/lighthouse": "^4.2",
-        "spatie/laravel-cors": "^1.6",
         "swaggest/json-schema": "^0.12.11"
     },
     "require-dev": {
@@ -25,8 +25,8 @@
         "filp/whoops": "^2.0",
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^7.5"
+        "nunomaduro/collision": "^4.1",
+        "phpunit/phpunit": "^8.5"
     },
     "config": {
         "optimize-autoloader": true,

@@ -1,59 +1,48 @@
 <?php
 
+$allowed_origins = [];
+$allowed_origins[] = env('APP_FRONTEND_ORIGIN');
+
+$APP_CORS_ORIGINS = env('APP_CORS_ORIGINS');
+if (isset($APP_CORS_ORIGINS)) {
+    foreach (explode(',', $APP_CORS_ORIGINS) as $origin) {
+        if ($origin === '*') {
+            $allowed_origins = ['*'];
+            break;
+        }
+        $allowed_origins[] = $origin;
+    }
+}
+
 return [
 
     /*
-     * A cors profile determines which origins, methods, headers are allowed for
-     * a given requests. The `DefaultProfile` reads its configuration from this
-     * config file.
-     *
-     * You can easily create your own cors profile.
-     * More info: https://github.com/spatie/laravel-cors/#creating-your-own-cors-profile
-     */
-    'cors_profile' => Spatie\Cors\CorsProfile\DefaultProfile::class,
+    |--------------------------------------------------------------------------
+    | Cross-Origin Resource Sharing (CORS) Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure your settings for cross-origin resource sharing
+    | or "CORS". This determines what cross-origin operations may execute
+    | in web browsers. You are free to adjust these settings as needed.
+    |
+    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    |
+    */
 
-    /*
-     * This configuration is used by `DefaultProfile`.
-     */
-    'default_profile' => [
+    'paths' => ['*'],
 
-        'allow_credentials' => true,
+    'allowed_methods' => ['GET', 'POST', 'OPTIONS'],
 
-        'allow_origins' => [
-            env('APP_FRONTEND_ORIGIN'),
-        ],
+    'allowed_origins' => $allowed_origins,
 
-        'allow_methods' => [
-            'GET',
-            'POST',
-            'OPTIONS',
-        ],
+    'allowed_origins_patterns' => [],
 
-        'allow_headers' => [
-            'Content-Type',
-            'X-Auth-Token',
-            'X-Xsrf-Token',
-            'Origin',
-            'Authorization',
-        ],
+    'allowed_headers' => ['*'],
 
-        'expose_headers' => [
-            'Cache-Control',
-            'Content-Language',
-            'Content-Type',
-            'Expires',
-            'Last-Modified',
-            'Pragma',
-        ],
+    'exposed_headers' => [],
 
-        'forbidden_response' => [
-            'message' => 'Forbidden (cors).',
-            'status' => 403,
-        ],
+    'max_age' => 0,
 
-        /*
-         * Preflight request will respond with value for the max age header.
-         */
-        'max_age' => 60 * 60 * 24,
-    ],
+    'supports_credentials' => true,
+
 ];
