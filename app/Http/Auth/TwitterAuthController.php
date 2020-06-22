@@ -6,10 +6,30 @@ use Auth;
 use Socialite;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class TwitterAuthController extends Controller
 {
     use AuthenticatesUsers;
+
+    static public function getDestination(Request $request = null, $user = null): String
+    {
+        $frontend = env('APP_FRONTEND_ORIGIN');
+
+        if (($request ?? request())->cookie('app-request-api-token') !== null) {
+            return $frontend . "/settings#app-request-api-token";
+        } else if ($user !== null) {
+            return $user->getPlayerPage() ?? $frontend;
+        }
+
+        return $frontend;
+    }
+
+    static public function clearAppTokenCookie(): Cookie
+    {
+        return \Cookie()->forget('app-request-api-token');
+    }
 
     public function redirectToProvider()
     {
@@ -21,14 +41,15 @@ class TwitterAuthController extends Controller
         try {
             $user = Socialite::driver('twitter')->user();
         } catch (Exception $e) {
-            return redirect('auth/twitter');
+            \Log::error($e);
+            return redirect('/');
         }
 
         $authUser = $this->findOrCreateUser($user);
 
         Auth::login($authUser, true);
 
-        return redirect($authUser->getPlayerPage() ?? env('APP_FRONTEND_ORIGIN'));
+        return redirect($this->getDestination(null, $authUser))->withCookie($this::clearAppTokenCookie());
     }
 
     private function replaceHttpWithHttps($url)
