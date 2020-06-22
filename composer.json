@@ -16,8 +16,6 @@
         "laravel/framework": "^7.0",
         "laravel/socialite": "^4.2",
         "laravel/tinker": "^2.0",
-        "mll-lab/laravel-graphql-playground": "^1.0",
-        "nuwave/lighthouse": "^4.2",
         "swaggest/json-schema": "^0.12.11"
     },
     "require-dev": {
