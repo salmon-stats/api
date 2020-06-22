@@ -1,4 +1,4 @@
-FROM php:7.4.1-fpm-alpine3.10
+FROM php:7.4.7-fpm-alpine3.12
 
 # install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer

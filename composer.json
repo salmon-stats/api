@@ -1,5 +1,5 @@
 {
-    "name": "salmon_stats_api",
+    "name": "salmon-stats/salmon-stats-api",
     "type": "project",
     "description": "API used by Salmon Stats and Salmonia.",
     "keywords": [
