@@ -39,8 +39,10 @@ class User extends Authenticatable
      */
     public function getPlayerPage()
     {
-        if ($this->player_id) return env('APP_FRONTEND_ORIGIN') . "/players/{$this->player_id}";
-        return null;
+        $account = \App\UserAccount::where('user_id', $this->id)->first();
+        if (!isset($account)) return null;
+
+        return env('APP_FRONTEND_ORIGIN') . "/players/$account->player_id";
     }
 
     public function getIsCustomNameAttribute()
