@@ -16,7 +16,7 @@ cp example.env .env
 vi .env
 
 docker-compose exec app bash
-composer install # TODO: move `composer install` to Dockerfile
+composer install --no-dev # TODO: move `composer install` to Dockerfile
 php artisan key:generate
 php artisan migrate
 

@@ -61,13 +61,13 @@ class User extends Authenticatable
             return $this->display_name;
         }
 
-        return $this->getOriginal('name');
+        return $this->getRawOriginal('name');
     }
 
     public function getTwitterAvatarAttribute()
     {
         if ($this->show_twitter_avatar) {
-            return $this->getOriginal('twitter_avatar');
+            return $this->getRawOriginal('twitter_avatar');
         }
 
         return null;

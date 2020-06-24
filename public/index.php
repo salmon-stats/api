@@ -1,5 +1,11 @@
 <?php
 
+// error_reporting(E_ALL);
+// ini_set('log_errors', 1);
+// ini_set('display_startup_errors', 1);
+// ini_set('display_errors', 1);
+// ini_set('error_log', '/var/www/html/storage/logs/php_error.log');
+
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
@@ -35,6 +41,7 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
+/** @var Illuminate\Foundation\Application */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
 /*
@@ -49,6 +56,7 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |
 */
 
+/** @var Illuminate\Contracts\Http\Kernel */
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 $response = $kernel->handle(
