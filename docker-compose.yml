@@ -18,6 +18,7 @@ services:
     expose:
       - '9000'
     volumes:
+      - ./docker/php/dev.php.ini:/usr/local/etc/php/php.ini
       - .:/var/www/html
 
   mysql:
