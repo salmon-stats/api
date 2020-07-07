@@ -1,9 +1,12 @@
 # salmon-stats-api
 
 ## Overview
-- **For front-end web app, please refer to [salmon-stats-app](https://github.com/yukidaruma/salmon-stats-app).**
-- This project provides API used by [salmon-stats-app](https://github.com/yukidaruma/salmon-stats-app).
-- The app is available online at [http://salmon-stats.yuki.games](http://salmon-stats.yuki.games).
+- **For front-end web app, please refer to [salmon-stats/web](https://github.com/salmon-stats/web).**
+- This project provides API used by following apps:
+  * [Salmonia (App Store)](https://apps.apple.com/app/salmonia/id1480684492) by [@tkgstrator](https://github.com/tkgstrator): iOS
+  * [salmon-stats/app](https://github.com/salmon-stats/app): Android
+  * [salmon-stats/web](https://github.com/salmon-stats/web): Web ([Link](https://salmon-stats.yuki.games))
+  * [tkgstrator/Salmonia](https://github.com/tkgstrator/Salmonia): Linux/Mac/Windows
 
 ## Installation
 ```sh
