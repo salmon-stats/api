@@ -62,7 +62,7 @@ class SalmonScheduleFetcher
                     '朽ちた箱舟 ポラリス' => 5,
                 ];
                 $weapons = array_map(
-                    function ($weapon) { return $weapon->id; },
+                    function ($weapon) { return (int) $weapon->id; },
                     $schedule->weapons,
                 );
                 $startTime = Carbon::parse($schedule->start_utc);
@@ -92,7 +92,7 @@ class SalmonScheduleFetcher
                     'Ruins of Ark Polaris' => 5,
                 ];
                 $weapons = array_map(
-                    function ($weapon) { return $weapon->id; },
+                    function ($weapon) { return (int) $weapon->id; },
                     $schedule->weapons,
                 );
                 $startTime = Carbon::createFromTimestamp($schedule->start_time);
