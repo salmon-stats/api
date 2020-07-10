@@ -11,4 +11,6 @@ class SalmonSchedule extends Model
     protected $casts = [
         'weapons' => 'array',
     ];
+    protected $primaryKey = 'schedule_id';
+    public $timestamps = false;
 }
