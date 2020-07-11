@@ -12,5 +12,6 @@ class SalmonSchedule extends Model
         'weapons' => 'array',
     ];
     protected $primaryKey = 'schedule_id';
+    public $incrementing = false;
     public $timestamps = false;
 }
