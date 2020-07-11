@@ -124,11 +124,7 @@ class SalmonResultsFilterHelper {
 
         foreach ($filters as $key => $filter) {
             if (isset($query[$key])) {
-                $filterResult = $filter($results, $query[$key]);
-
-                if (isset($filterResult)) {
-                    $results = $filterResult;
-                }
+                $results = $results->where(fn ($q) => $filter($q, $query[$key]));
             }
         }
 
