@@ -33,7 +33,7 @@ class SalmonResultsFilterHelper {
         return self::buildWhere($column, '<=');
     }
 
-    static function apply(Model $results, array $query, array $orderByArgs = [])
+    static function apply($results, array $query, array $orderByArgs = [])
     {
         $filters = [];
         $model = $results->getModel();
