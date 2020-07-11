@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SalmonResultsFilterHelper;
 use Illuminate\Http\Request;
 use App\Repositories\SalmonScheduleRepository;
+use App\SalmonSchedule;
 
 class SalmonScheduleController extends Controller
 {
@@ -16,8 +18,10 @@ class SalmonScheduleController extends Controller
 
     public function index(Request $request)
     {
-        return \App\SalmonSchedule
-            ::orderBy('schedule_id', 'desc')
+        $results = new SalmonSchedule();
+
+        return SalmonResultsFilterHelper::apply($results, $request->all())
+            ->orderBy('schedule_id', 'desc')
             ->paginate(15);
     }
 
