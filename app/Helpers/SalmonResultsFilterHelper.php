@@ -105,26 +105,33 @@ class SalmonResultsFilterHelper {
                 'stages' => fn ($results, $value) => $results->whereIn('stage_id', self::explodeCsv($value)),
                 'weapons' => function ($results, $value) {
                     $ids = self::toIntArray(self::explodeCsv($value));
-                    $rareWeaponIds = collect($ids)->filter(fn ($id) => $id >= 20000);
 
-                    foreach ($ids as $id) {
-                        $results = $results->orWhere(fn ($q) => $q->whereJsonContains('weapons', [$id]));
-                    }
+                    return $results->where(function ($query) use ($ids) {
+                        $rareWeaponIds = collect($ids)->filter(fn ($id) => $id >= 20000);
 
-                    if ($rareWeaponIds->isNotEmpty()) {
-                        $results = $results
-                            ->orWhere(fn ($q) => $q->whereIn('rare_weapon_id', $rareWeaponIds))
-                            ->orWhere(fn ($q) => $q->whereJsonContains('weapons', [-2]));
-                    }
+                        foreach ($ids as $id) {
+                            $query = $query->orWhere(fn ($query) => $query->whereJsonContains('weapons', [$id]));
+                        }
 
-                    return $results;
+                        if ($rareWeaponIds->isNotEmpty()) {
+                            $query = $query
+                                ->orWhere(fn ($query) => $query->whereIn('rare_weapon_id', $rareWeaponIds))
+                                ->orWhere(fn ($query) => $query->whereJsonContains('weapons', [-2]));
+                        }
+
+                        return $query;
+                    });
                 }
             ];
         }
 
         foreach ($filters as $key => $filter) {
             if (isset($query[$key])) {
-                $results = $results->where(fn ($q) => $filter($q, $query[$key]));
+                $filterResult = $filter($results, $query[$key]);
+
+                if (isset($filterResult)) {
+                    $results = $filterResult;
+                }
             }
         }
 
