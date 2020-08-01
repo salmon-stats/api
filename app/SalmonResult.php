@@ -11,6 +11,7 @@ class SalmonResult extends Model
     protected $casts = [
         'members' => 'array',
         'boss_appearances' => 'object',
+        'is_eligible_for_no_night_record' => 'boolean',
     ];
     protected $guarded = [];
 
