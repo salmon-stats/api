@@ -3,13 +3,22 @@
 namespace App\UseCases;
 
 use App\Helpers\SalmonResultsFilterHelper;
+use App\SalmonPlayerBossElimination;
 use App\SalmonResult;
 use App\SalmonPlayerResult;
+use App\SalmonWave;
 
 class IndexResultUsecase
 {
+    const DEFAULT_RAW_RESULTS_COUNT = 100;
+    const MAXIMUM_RAW_RESULTS_COUNT = 200;
+
     public function __invoke($playerId = null, $scheduleTimestamp = null, String $routeName, array $query = [])
     {
+        if (isset($query['raw'])) {
+            return $this->rawResults($playerId, isset($query['count']) ? $query['count'] : null);
+        }
+
         $results = new SalmonResult();
         $orderByArgs = [];
 
@@ -56,5 +65,68 @@ class IndexResultUsecase
         }
 
         return $results->paginate($perPage);
+    }
+
+    private function rawResults(string $playerId, ?int $count)
+    {
+        if (!isset($playerId))  {
+            abort(400);
+        }
+
+        $count = max(1, min($count ?? self::DEFAULT_RAW_RESULTS_COUNT, self::MAXIMUM_RAW_RESULTS_COUNT));
+
+        $resultsWithPagination = SalmonResult::whereJsonContains('members', $playerId)
+            ->orderBy('id', 'desc')
+            ->simplePaginate($count)
+            ->toArray();
+        $results = $resultsWithPagination['data'];
+        unset($resultsWithPagination['data']);
+
+        $ids = array_map(
+            fn ($result) => $result['id'],
+            $results,
+        );
+
+        $playerBossEliminations = SalmonPlayerBossElimination::whereIn('salmon_id', $ids)->get()->makeVisible('salmon_id')->toArray();
+        $playerResults = SalmonPlayerResult::whereIn('salmon_id', $ids)->get()->makeVisible('salmon_id')->toArray();
+        $waveResults = SalmonWave::whereIn('salmon_id', $ids)->get()->makeVisible('salmon_id')->toArray();
+
+        $results = array_map(
+            function ($salmonResult) use ($playerBossEliminations, $playerResults, $waveResults) {
+                $playerBossElimination = $this->filterRelevantResults($salmonResult['id'], $playerBossEliminations);
+                $playerResult = $this->filterRelevantResults($salmonResult['id'], $playerResults);
+                $waveResult = $this->filterRelevantResults($salmonResult['id'], $waveResults);
+
+                return array_merge(
+                    $salmonResult,
+                    ['boss_eliminations' => $playerBossElimination, 'player_results' => $playerResult, 'waves' => $waveResult],
+                );
+            },
+            $results,
+        );
+
+        return array_merge(
+            $resultsWithPagination,
+            ['results' => $results],
+        );
+    }
+
+    private function filterRelevantResults(int $salmonId, array $array) {
+        return $this->valuesWithoutSalmonId(
+            array_filter(
+                $array,
+                fn ($result) => $result['salmon_id'] == $salmonId,
+            ),
+        );
+    }
+
+    private function valuesWithoutSalmonId(array $array) {
+        return array_map(
+            function ($value) {
+                unset($value['salmon_id']);
+                return $value;
+            },
+            array_values($array),
+        );
     }
 }
