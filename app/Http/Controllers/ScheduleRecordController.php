@@ -20,13 +20,15 @@ class ScheduleRecordController extends Controller
 
         try {
             foreach ($queries as $query) {
-                $totalRecord = DB::select($this->buildTotalEggQuery($query), [$scheduleTimestamp]);
+                $totalRecord = DB::select($this->buildTotalEggQuery($query[1]), [$scheduleTimestamp]);
+                $noNightTotalRecord = DB::select($this->buildNoNightTotalEggQuery($query[1]), [$scheduleTimestamp]);
 
                 if (sizeof($totalRecord) === 0) {
                     return null;
                 }
 
                 $response['totals'][$query[1]] = $totalRecord[0];
+                $response['no_night_totals'][$query[1]] = $noNightTotalRecord[0];
                 $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleTimestamp]);
             }
         }
@@ -43,22 +45,34 @@ class ScheduleRecordController extends Controller
         return $response;
     }
 
-    static function buildTotalEggQuery($query) {
-        $totalEggsQuery = <<<QUERY
-SELECT
-        id,
-        golden_egg_delivered AS golden_eggs,
-        power_egg_collected AS power_eggs
-    FROM salmon_results
-    WHERE schedule_id = ?
-    ORDER BY $query[1] DESC, id ASC
-    LIMIT 1
-QUERY;
-        return $totalEggsQuery;
+    static function buildTotalEggQuery($orderByColumn) {
+        return <<<QUERY
+        SELECT
+            id,
+            golden_egg_delivered AS golden_eggs,
+            power_egg_collected AS power_eggs
+        FROM salmon_results
+        WHERE schedule_id = ?
+        ORDER BY $orderByColumn DESC, id ASC
+        LIMIT 1
+        QUERY;
+    }
+
+    static function buildNoNightTotalEggQuery($orderByColumn) {
+        return <<<QUERY
+        SELECT
+            id,
+            golden_egg_delivered AS golden_eggs,
+            power_egg_collected AS power_eggs
+        FROM salmon_results
+        WHERE schedule_id = ? AND is_eligible_for_no_night_record
+        ORDER BY $orderByColumn DESC, id ASC
+        LIMIT 1
+        QUERY;
     }
 
     static function buildTideXEventRecordsQuery($query) {
-        $queryBuilt = <<<QUERY
+        return <<<QUERY
 WITH salmon_ids AS (
     SELECT id FROM salmon_results
     WHERE schedule_id = ?
@@ -93,6 +107,5 @@ SELECT id, water_id, event_id, golden_eggs, power_eggs
     FROM records
     WHERE row_num = 1
 QUERY;
-        return $queryBuilt;
     }
 }
