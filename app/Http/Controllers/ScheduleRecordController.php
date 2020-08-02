@@ -23,12 +23,12 @@ class ScheduleRecordController extends Controller
                 $totalRecord = DB::select($this->buildTotalEggQuery($query[1]), [$scheduleTimestamp]);
                 $noNightTotalRecord = DB::select($this->buildNoNightTotalEggQuery($query[1]), [$scheduleTimestamp]);
 
-                if (sizeof($totalRecord) === 0) {
+                if (count($totalRecord) === 0) {
                     return null;
                 }
 
                 $response['totals'][$query[1]] = $totalRecord[0];
-                $response['no_night_totals'][$query[1]] = $noNightTotalRecord[0];
+                $response['no_night_totals'][$query[1]] = empty($noNightTotalRecord) ? null : $noNightTotalRecord[0];
                 $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleTimestamp]);
             }
         }
@@ -37,9 +37,6 @@ class ScheduleRecordController extends Controller
         }
         catch (Illuminate\Database\QueryException $e) {
             abort(500, 'Query error');
-        }
-        catch (\Exception $e) {
-            abort(500, "Unhandled Exception: {$e->getMessage()}");
         }
 
         return $response;
