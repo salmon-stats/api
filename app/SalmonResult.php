@@ -15,14 +15,8 @@ class SalmonResult extends Model
     ];
     protected $guarded = [];
 
-    public function playerResults()
+    public function getMemberAccountsAttribute()
     {
-        return $this
-            ->hasMany('App\SalmonPlayerResult', 'salmon_id')
-            ->with(['bossEliminations', 'specialUses', 'weapons']);
-    }
-
-    public function getMemberAccountsAttribute() {
         return collect($this->members)->map(function ($playerId) {
             // TODO: optimize query
             $user = \App\User::join('user_accounts', 'user_accounts.user_id', '=', 'users.id')

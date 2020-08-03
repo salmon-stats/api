@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
+use App\Helpers\SalmonResultQueryHelper;
 use App\SalmonPlayerResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -294,17 +295,22 @@ QUERY;
      */
     public function show(Request $request)
     {
-        if (isset($request->player_id))  {
+        if (isset($request->player_id)) {
             $query = SalmonResult::whereJsonContains('members', $request->player_id)
                 ->orderBy('id', 'desc');
-        }
-        elseif (isset($request->salmon_id)) {
+        } elseif (isset($request->salmon_id)) {
             $query = SalmonResult::where('id', $request->salmon_id);
         }
 
-        return $query
-            ->with(['playerResults', 'schedule', 'waves'])
+        $result = $query
+            ->with(['schedule'])
             ->firstOrFail()
-            ->append('member_accounts');
+            ->append('member_accounts')
+            ->toArray();
+
+        return array_merge(
+            $result,
+            SalmonResultQueryHelper::queryFullResults($result)[0],
+        );
     }
 }
