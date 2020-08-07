@@ -76,7 +76,7 @@ class IndexResultUsecase
 
         $resultsWithPagination = SalmonResult::whereJsonContains('members', $playerId)
             ->orderBy('id', 'desc')
-            ->simplePaginate($count)
+            ->paginate($count)
             ->toArray();
         $results = $resultsWithPagination['data'];
         unset($resultsWithPagination['data']);
