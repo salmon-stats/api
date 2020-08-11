@@ -20,16 +20,24 @@ class ScheduleRecordController extends Controller
 
         try {
             foreach ($queries as $query) {
-                $totalRecord = DB::select($this->buildTotalEggQuery($query[1]), [$scheduleTimestamp]);
-                $noNightTotalRecord = DB::select($this->buildNoNightTotalEggQuery($query[1]), [$scheduleTimestamp]);
-
-                if (count($totalRecord) === 0) {
+                $totalRecord = $this->buildTotalEggQuery($query[1], $scheduleTimestamp)->first();
+                if (empty($totalRecord)) {
                     return null;
                 }
 
-                $response['totals'][$query[1]] = $totalRecord[0];
-                $response['no_night_totals'][$query[1]] = empty($noNightTotalRecord) ? null : $noNightTotalRecord[0];
-                $response['wave_records'][$query[1]] = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleTimestamp]);
+                $noNightTotalRecord = $this->buildNoNightTotalEggQuery($query[1], $scheduleTimestamp)->first();
+                $rawWaveRecords = DB::select($this->buildTideXEventRecordsQuery($query), [$scheduleTimestamp]);
+                $waveRecords = array_map(
+                    function ($wave) {
+                        $wave->members = json_decode($wave->members);
+                        return $wave;
+                    },
+                    $rawWaveRecords,
+                );
+
+                $response['totals'][$query[1]] = $totalRecord;
+                $response['no_night_totals'][$query[1]] = empty($noNightTotalRecord) ? null : $noNightTotalRecord;
+                $response['wave_records'][$query[1]] = $waveRecords;
             }
         }
         catch (\InvalidArgumentException $e) {
@@ -42,30 +50,16 @@ class ScheduleRecordController extends Controller
         return $response;
     }
 
-    static function buildTotalEggQuery($orderByColumn) {
-        return <<<QUERY
-        SELECT
-            id,
-            golden_egg_delivered AS golden_eggs,
-            power_egg_collected AS power_eggs
-        FROM salmon_results
-        WHERE schedule_id = ?
-        ORDER BY $orderByColumn DESC, id ASC
-        LIMIT 1
-        QUERY;
+    static function buildTotalEggQuery($orderByColumn, $scheduleId) {
+        return \App\SalmonResult::select('id', 'golden_egg_delivered AS golden_eggs', 'power_egg_collected AS power_eggs', 'members')
+            ->where('schedule_id', $scheduleId)
+            ->orderBy($orderByColumn, 'desc')
+            ->orderBy('id');
     }
 
-    static function buildNoNightTotalEggQuery($orderByColumn) {
-        return <<<QUERY
-        SELECT
-            id,
-            golden_egg_delivered AS golden_eggs,
-            power_egg_collected AS power_eggs
-        FROM salmon_results
-        WHERE schedule_id = ? AND is_eligible_for_no_night_record
-        ORDER BY $orderByColumn DESC, id ASC
-        LIMIT 1
-        QUERY;
+    static function buildNoNightTotalEggQuery(...$args) {
+        return self::buildTotalEggQuery(...$args)
+            ->where('is_eligible_for_no_night_record');
     }
 
     static function buildTideXEventRecordsQuery($query) {
@@ -88,19 +82,21 @@ water_x_event AS (
 ),
 records AS (
     SELECT
-            id,
+            salmon_results.id AS id,
             wave_results.water_id,
             wave_results.event_id AS event_id,
-            golden_egg_delivered AS golden_eggs,
-            power_egg_collected AS power_eggs,
+            wave_results.golden_egg_delivered AS golden_eggs,
+            wave_results.power_egg_collected AS power_eggs,
             ROW_NUMBER() OVER (PARTITION BY wave_results.water_id, wave_results.event_id
-                ORDER BY $query[0] DESC, id ASC) AS row_num
-        FROM water_x_event
+                ORDER BY wave_results.$query[0] DESC, id ASC) AS row_num,
+            salmon_results.members
+                FROM water_x_event
         INNER JOIN wave_results ON water_x_event.water_id = wave_results.water_id
             AND (water_x_event.event_id = wave_results.event_id
                 OR (water_x_event.event_id IS NULL AND wave_results.event_id IS NULL))
+        INNER JOIN salmon_results ON wave_results.salmon_id = salmon_results.id
 )
-SELECT id, water_id, event_id, golden_eggs, power_eggs
+SELECT id, water_id, event_id, golden_eggs, power_eggs, members
     FROM records
     WHERE row_num = 1
 QUERY;
