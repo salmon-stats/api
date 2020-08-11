@@ -93,6 +93,10 @@ class SalmonResultController extends Controller
                 }, $playerResults),
             );
 
+            $waveDetails = $job['wave_details'];
+            $wavesPlayed = sizeof($waveDetails);
+            $waveIndices = range(0, $wavesCleared === 0 ? 0 : $wavesPlayed - 1);
+
             $salmonResult = new SalmonResult();
             $salmonResult
                 ->fill([
@@ -116,12 +120,10 @@ class SalmonResultController extends Controller
                     ),
                     'boss_appearance_count' => array_sum($bossAppearances),
                     'boss_elimination_count' => $bossEliminationCount,
+                    'is_eligible_for_no_night_record' => $wavesPlayed === 3 && collect($waveDetails)->every(fn ($wave) => $wave['event_type']['key'] === 'water-levels'),
                 ])
                 ->save();
 
-            $waveDetails = $job['wave_details'];
-            $wavesPlayed = sizeof($waveDetails);
-            $waveIndices = range(0, $wavesCleared === 0 ? 0 : $wavesPlayed - 1);
             foreach ($waveIndices as $waveIndex) {
                 $waveDetail = $waveDetails[$waveIndex];
                 // You don't have to validate event_type and water_level
