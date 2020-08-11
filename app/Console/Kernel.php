@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\FetchSchedules;
+use App\Console\Commands\UpdateTwitterAvatars;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -27,7 +28,12 @@ class Kernel extends ConsoleKernel
     {
         $schedule
             ->command(FetchSchedules::class, ['--future'])
-            ->everyFiveMinutes()
+            ->everyFifteenMinutes()
+            ->appendOutputTo(storage_path('logs/scheduled-tasks.log'));
+
+        $schedule
+            ->command(UpdateTwitterAvatars::class)
+            ->everyFifteenMinutes()
             ->appendOutputTo(storage_path('logs/scheduled-tasks.log'));
     }
 
