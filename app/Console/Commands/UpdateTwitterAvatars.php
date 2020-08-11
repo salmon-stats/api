@@ -88,7 +88,8 @@ class UpdateTwitterAvatars extends Command
 
             $userToUpdate = collect($users)->first(fn ($user) => $user->twitter_id === $twitterUser->id);
             if (!empty($userToUpdate)) {
-                $userToUpdate->twitter_avatar = $twitterUser->profile_image_url_https;
+                $originalProfileImage = str_replace("_normal.", ".", $twitterUser->profile_image_url_https);
+                $userToUpdate->twitter_avatar = $originalProfileImage;
                 $userToUpdate->save();
             }
         }
