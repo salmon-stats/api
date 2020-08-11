@@ -39,7 +39,7 @@ class FetchSchedules extends Command
     public function handle()
     {
         $bypassChecking = $this->option('bypass-checking');
-        $this->info("FetchSchedules: Started" . ($bypassChecking ? ' (Bypass checking)' : ''));
+        $this->info(__CLASS__ . ": Started" . ($bypassChecking ? ' (Bypass checking)' : ''));
 
         if (!$bypassChecking) {
             $upcomingScheduleCount = \App\SalmonSchedule::where(
@@ -52,7 +52,7 @@ class FetchSchedules extends Command
 
             $shouldFetchFutureSchedules = $upcomingScheduleCount < 2;
             if (!$shouldFetchFutureSchedules) {
-                $this->info("FetchSchedules: Canceled because $upcomingScheduleCount future schedules already exists.");
+                $this->info(__CLASS__ . ": Canceled because $upcomingScheduleCount future schedules already exists.");
                 return;
             }
         }
@@ -61,10 +61,10 @@ class FetchSchedules extends Command
 
         if ($this->option('future')) {
             $salmonScheduleFetcher->fetchFutureSchedules();
-            $this->info('FetchSchedules: Successfully fetched future schedules.');
+            $this->info(__CLASS__ . ': Successfully fetched future schedules.');
         } else {
             $salmonScheduleFetcher->fetchPastSchedules();
-            $this->info('FetchSchedules: Successfully fetched past schedules.');
+            $this->info(__CLASS__ . ': Successfully fetched past schedules.');
         }
     }
 }
