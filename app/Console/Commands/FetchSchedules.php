@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class FetchSchedules extends Command
 {
@@ -11,7 +12,7 @@ class FetchSchedules extends Command
      *
      * @var string
      */
-    protected $signature = 'salmon-stats:fetch-schedules';
+    protected $signature = 'salmon-stats:fetch-schedules {--future} {--bypass-checking}';
 
     /**
      * The console command description.
@@ -37,7 +38,33 @@ class FetchSchedules extends Command
      */
     public function handle()
     {
+        $bypassChecking = $this->option('bypass-checking');
+        $this->info(__CLASS__ . ": Started" . ($bypassChecking ? ' (Bypass checking)' : ''));
+
+        if (!$bypassChecking) {
+            $upcomingScheduleCount = \App\SalmonSchedule::where(
+                    'end_at',
+                    '>',
+                    DB::raw('NOW()'),
+                )
+                ->get()
+                ->count();
+
+            $shouldFetchFutureSchedules = $upcomingScheduleCount < 2;
+            if (!$shouldFetchFutureSchedules) {
+                $this->info(__CLASS__ . ": Canceled because $upcomingScheduleCount future schedules already exists.");
+                return;
+            }
+        }
+
         $salmonScheduleFetcher = new \App\Helpers\SalmonScheduleFetcher();
-        $salmonScheduleFetcher->fetchPastSchedules();
+
+        if ($this->option('future')) {
+            $salmonScheduleFetcher->fetchFutureSchedules();
+            $this->info(__CLASS__ . ': Successfully fetched future schedules.');
+        } else {
+            $salmonScheduleFetcher->fetchPastSchedules();
+            $this->info(__CLASS__ . ': Successfully fetched past schedules.');
+        }
     }
 }

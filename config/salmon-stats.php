@@ -1,0 +1,6 @@
+<?php
+
+return [
+    'TWITTER_CONSUMER_KEY' => env('TWITTER_CONSUMER_KEY'),
+    'TWITTER_CONSUMER_SECRET' => env('TWITTER_CONSUMER_SECRET'),
+];
