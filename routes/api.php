@@ -52,11 +52,15 @@ Route::get('/id-key-map', function () {
             'weapon' => $weapons,
         ];
     });
-})->name('id-key-map');
+})
+    ->name('id-key-map')
+    ->middleware('cache.headers:public;max_age=86400');
 
 // Results routes
 Route::get('/results', 'SalmonResultController@index')->name('results');
-Route::get('/results/{salmon_id}', 'SalmonResultController@show')->name('results.show');
+Route::get('/results/{salmon_id}', 'SalmonResultController@show')
+    ->name('results.show')
+    ->middleware('cache.headers:public;max_age=86400');
 
 // Players routes
 Route::get('/players/{screen_name}', function (Request $request, string $screenNameWithAt) {
