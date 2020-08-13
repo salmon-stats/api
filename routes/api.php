@@ -20,36 +20,38 @@ use App\Helpers\Helper;
  */
 
 Route::get('/id-key-map', function () {
-    $bosses = Helper::makeIdTokeyMap(
-        \App\SalmonBoss::get()
-    );
-    $events = Helper::makeIdTokeyMap(
-        \App\SalmonEvent::get()
-    );
-    $failReasons = Helper::makeIdTokeyMap(
-        \App\SalmonFailReason::get()
-    );
-    $waterLevels = Helper::makeIdTokeyMap(
-        \App\SalmonWaterLevel::get()
-    );
-    $specials = Helper::makeIdTokeyMap(
-        \App\SalmonSpecial::get()
-    );
-    $stages = Helper::makeIdTokeyMap(
-        \App\SalmonStage::get()
-    );
-    $weapons = Helper::makeIdTokeyMap(
-        \App\SalmonWeapon::get()
-    );
-    return [
-        'boss' => $bosses,
-        'event' => $events,
-        'fail_reason' => $failReasons,
-        'special' => $specials,
-        'stage' => $stages,
-        'water_level' => $waterLevels,
-        'weapon' => $weapons,
-    ];
+    return Cache::rememberForever('id-key-map', function () {
+        $bosses = Helper::makeIdTokeyMap(
+            \App\SalmonBoss::get()
+        );
+        $events = Helper::makeIdTokeyMap(
+            \App\SalmonEvent::get()
+        );
+        $failReasons = Helper::makeIdTokeyMap(
+            \App\SalmonFailReason::get()
+        );
+        $waterLevels = Helper::makeIdTokeyMap(
+            \App\SalmonWaterLevel::get()
+        );
+        $specials = Helper::makeIdTokeyMap(
+            \App\SalmonSpecial::get()
+        );
+        $stages = Helper::makeIdTokeyMap(
+            \App\SalmonStage::get()
+        );
+        $weapons = Helper::makeIdTokeyMap(
+            \App\SalmonWeapon::get()
+        );
+        return [
+            'boss' => $bosses,
+            'event' => $events,
+            'fail_reason' => $failReasons,
+            'special' => $specials,
+            'stage' => $stages,
+            'water_level' => $waterLevels,
+            'weapon' => $weapons,
+        ];
+    });
 })->name('id-key-map');
 
 // Results routes
