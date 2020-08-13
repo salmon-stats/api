@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\SalmonStatsConst;
+use App\Helpers\CacheHelper;
 use App\Helpers\Helper;
 use App\Helpers\SalmonResultQueryHelper;
 use App\SalmonPlayerResult;
@@ -45,6 +46,7 @@ class SalmonResultController extends Controller
     protected function createRecords($job, $user, $uploaderPlayerId)
     {
         return function () use ($job, $user, $uploaderPlayerId) {
+            $affectedPlayerIds = [];
             $playerJobId = $job['job_id'] ?: null;
             $playerResults = array_merge([$job['my_result']], $job['other_results']);
             usort($playerResults, function ($a, $b) { return $a['pid'] > $b['pid'] ? 1 : -1; });
@@ -147,6 +149,8 @@ class SalmonResultController extends Controller
             }
 
             foreach ($playerResults as $playerResult) {
+                $affectedPlayerIds[] = $playerResult['pid'];
+
                 $bossKillCounts = Helper::mapCount($playerResult['boss_kill_counts']);
                 $salmonPlayerResult = [
                     'salmon_id' => $salmonResult->id,
@@ -230,6 +234,7 @@ QUERY;
                 'created' => true,
                 'job_id' => $playerJobId,
                 'salmon_id' => $salmonResult->id,
+                'affected_players' => $affectedPlayerIds,
             ];
         };
     }
@@ -270,14 +275,23 @@ QUERY;
 
             try {
                 $results[] = DB::transaction($this->createRecords($job, $user, $uploaderPlayerId));
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 Log::error($e);
                 abort(500, "Unhandled Exception: {$e->getMessage()}");
             }
         }
 
         \Auth::user()->touch();
+
+        // Purge cache for affected players
+        $affectedPlayerIds = collect($results)
+            ->filter(fn ($result) => array_key_exists('affected_players', $result))
+            ->map(fn ($result) => $result['affected_players'])
+            ->flatten()
+            ->unique();
+        foreach ($affectedPlayerIds as $affectedPlayerId) {
+            CacheHelper::purgePlayerCaches($affectedPlayerId);
+        }
 
         if ($request->query('mode') === 'object') {
             return response()->json([
