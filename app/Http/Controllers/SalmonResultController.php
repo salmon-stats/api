@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\SalmonStatsConst;
 use App\Helpers\Helper;
 use App\Helpers\SalmonResultQueryHelper;
 use App\SalmonPlayerResult;
@@ -82,9 +83,7 @@ class SalmonResultController extends Controller
                 ];
             }
 
-            $failReason = \App\SalmonFailReason::where(
-                'key', $job['job_result']['failure_reason']
-            )->first();
+            $failReason = collect(SalmonStatsConst::SALMON_FAIL_REASONS)->first(fn ($reason) => $reason[1] === $job['job_result']['failure_reason']);
 
             $bossAppearances = Helper::mapCount($job['boss_counts']);
             $bossEliminationCount = array_sum(
@@ -106,7 +105,7 @@ class SalmonResultController extends Controller
                     'boss_appearances' => $bossAppearances,
                     'uploader_user_id' => $user->id,
                     'clear_waves' => $wavesCleared,
-                    'fail_reason_id' => $failReason ? $failReason->id : null,
+                    'fail_reason_id' => $failReason === null ? null : $failReason[0],
                     'danger_rate' => $job['danger_rate'],
                     'golden_egg_delivered' => array_reduce(
                         $job['wave_details'],
@@ -124,17 +123,16 @@ class SalmonResultController extends Controller
                 ])
                 ->save();
 
+            $events = collect(SalmonStatsConst::SALMON_EVENTS);
+            $waterLevels = collect(SalmonStatsConst::SALMON_WATER_LEVELS);
+
             foreach ($waveIndices as $waveIndex) {
                 $waveDetail = $waveDetails[$waveIndex];
+
                 // You don't have to validate event_type and water_level
                 // because it's already done by json schema.
-
-                $eventId = \App\SalmonEvent::where(
-                    'splatnet', $waveDetail['event_type']['key']
-                )->first()->id;
-                $waterLevelId = \App\SalmonWaterLevel::where(
-                    'splatnet', $waveDetail['water_level']['key'],
-                )->first()->id;
+                $eventId = $events->first(fn ($event) => $event[2] === $waveDetail['event_type']['key'])[0];
+                $waterLevelId = $waterLevels->first(fn ($waterLevel) => $waterLevel[2] === $waveDetail['water_level']['key'])[0];
 
                 \App\SalmonWave::create([
                     'salmon_id' => $salmonResult->id,

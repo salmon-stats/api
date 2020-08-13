@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\SalmonStatsConst;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -18,13 +19,8 @@ class CreateSalmonResultsTable extends Migration
             $table->statInkKey('key');
         });
 
-        $failReasons = [
-            'wipe_out',
-            'time_limit',
-        ];
-
-        foreach ($failReasons as $key) {
-            DB::table('salmon_fail_reasons')->insert(['key' => $key]);
+        foreach (SalmonStatsConst::SALMON_FAIL_REASONS as $failReason) {
+            DB::table('salmon_fail_reasons')->insert(['key' => $failReason[1]]);
         }
 
         Schema::create('salmon_results', function (Blueprint $table) {
