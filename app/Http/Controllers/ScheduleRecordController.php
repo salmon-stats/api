@@ -59,7 +59,7 @@ class ScheduleRecordController extends Controller
 
     static function buildNoNightTotalEggQuery(...$args) {
         return self::buildTotalEggQuery(...$args)
-            ->where('is_eligible_for_no_night_record');
+            ->where('is_eligible_for_no_night_record', 1);
     }
 
     static function buildTideXEventRecordsQuery($query) {
