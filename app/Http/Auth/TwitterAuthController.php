@@ -62,6 +62,7 @@ class TwitterAuthController extends Controller
         $authUser = User::where('twitter_id', $twitterUser->id)->first();
 
         if ($authUser) {
+            $authUser->name = $twitterUser->nickname;
             $authUser->twitter_avatar = $this->replaceHttpWithHttps($twitterUser->avatar_original);
             $authUser->save();
             return $authUser;
@@ -69,7 +70,7 @@ class TwitterAuthController extends Controller
 
         return User::create([
             // Use twitter screen name (@example without `@`) as name
-            'name' => strtolower($twitterUser->nickname),
+            'name' => $twitterUser->nickname,
             'twitter_id' => $twitterUser->id,
             // api_token must be unique; 256-bit hash won't practically collide.
             'api_token' => \App\Helpers\Helper::generateApiToken(),

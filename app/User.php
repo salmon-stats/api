@@ -72,4 +72,9 @@ class User extends Authenticatable
 
         return null;
     }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtolower($value);
+    }
 }
