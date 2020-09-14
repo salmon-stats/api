@@ -42,13 +42,15 @@ class MergeUsers extends Command
     {
         $secondary = $this->argument('secondary');
         $primary = $this->argument('primary');
-        $confirmationText = "Are you sure to DELETE `$secondary` and merge its data into `$primary`?\n" .
+
+        $primaryUser = \App\User::where(...$this->makeQuery($primary))->firstOrFail();
+        $secondaryUser = \App\User::where(...$this->makeQuery($secondary))->firstOrFail();
+
+        $confirmationText = "Are you sure to DELETE `$secondary` ($secondaryUser->name) and merge its data into `$primary` ($primaryUser->name)?\n" .
             'This action cannot be undone.';
 
         if ($this->confirm($confirmationText)) {
-            DB::transaction(function () use ($primary, $secondary) {
-                $primaryUser = \App\User::where('name', $primary)->firstOrFail();
-                $secondaryUser = \App\User::where('name', $secondary)->firstOrFail();
+            DB::transaction(function () use ($primaryUser, $secondaryUser) {
                 $secondaryAccount = \App\UserAccount::where('user_id', $secondaryUser->id);
                 $affected = $secondaryAccount->update([
                     'user_id' => $primaryUser->id,
@@ -69,5 +71,9 @@ class MergeUsers extends Command
                 $secondaryUser->delete();
             });
         }
+    }
+
+    private function makeQuery($value) {
+        return ['id', $value];
     }
 }
