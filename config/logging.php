@@ -3,6 +3,8 @@
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 
+$default_log_level = env('APP_LOG_LEVEL', 'warning');
+
 return [
 
     /*
@@ -43,13 +45,13 @@ return [
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
+            'level' => $default_log_level,
         ],
 
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
+            'level' => $default_log_level,
             'days' => 14,
         ],
 
