@@ -247,6 +247,8 @@ QUERY;
      */
     public function store(Request $request)
     {
+        $results = [];
+
         $user = $request->user();
 
         $schema = Schema::import(json_decode(
