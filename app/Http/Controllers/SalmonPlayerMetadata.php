@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SalmonPlayerMetadata extends Controller
 {
@@ -45,6 +46,10 @@ class SalmonPlayerMetadata extends Controller
             ->where('salmon_player_names.player_id', $id)
             ->get()
             ->toArray();
+
+        if (empty($metadata)) {
+            throw new NotFoundHttpException();
+        }
 
         $metadata[0]->total = DB::table('salmon_player_results')
             ->select(
