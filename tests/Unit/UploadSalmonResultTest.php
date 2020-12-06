@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\User;
+use App\UserAccount;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -11,7 +13,7 @@ class UploadSalmonResultTest extends TestCase
 {
     private function getTestUser()
     {
-        return factory(\App\User::class)->create();
+        return User::factory()->create();
     }
 
     private function getTestUserRequest($testUser = null)
@@ -83,7 +85,7 @@ class UploadSalmonResultTest extends TestCase
             ]);
 
         $this->assertTrue(
-            \App\UserAccount::where('player_id', $pid1)
+            UserAccount::where('player_id', $pid1)
                 ->where('is_primary', true)
                 ->exists(),
             'primary account should be created.',
@@ -106,7 +108,7 @@ class UploadSalmonResultTest extends TestCase
         $failedResponse2->assertStatus(200);
 
         $this->assertTrue(
-            \App\UserAccount::where('player_id', $pid2)
+            UserAccount::where('player_id', $pid2)
                 ->where('is_primary', false)
                 ->exists(),
             'non-primary account should be created.',
