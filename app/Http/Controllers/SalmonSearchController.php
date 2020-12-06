@@ -9,7 +9,12 @@ class SalmonSearchController extends Controller
 {
     public function player(Request $request)
     {
-        $screenNameQuery = Helper::escapeLike($request->query('name')) . '%';
+        $name = $request->query('name');
+        if (empty($name)) {
+            abort(400);
+        }
+
+        $screenNameQuery = Helper::escapeLike($name) . '%';
         $nameQuery = '%' . $screenNameQuery;
 
         $names = \App\SalmonPlayerName::where('name', 'LIKE', $nameQuery)
