@@ -12,7 +12,7 @@ class IndexResultUsecase
     const DEFAULT_RAW_RESULTS_COUNT = 100;
     const MAXIMUM_RAW_RESULTS_COUNT = 200;
 
-    public function __invoke($playerId = null, $scheduleTimestamp = null, String $routeName = '', array $query = [])
+    public function __invoke(?string $playerId, ?string $scheduleTimestamp, string $routeName = '', array $query = [])
     {
         if (isset($query['raw'])) {
             return $this->rawResults($playerId, isset($query['count']) ? $query['count'] : null);
