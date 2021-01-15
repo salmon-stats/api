@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Helpers\CacheHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -76,5 +77,15 @@ class User extends Authenticatable
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = strtolower($value);
+    }
+
+    protected static function booted()
+    {
+        static::updated(function (User $user) {
+            $accounts = UserAccount::where('user_id', $user->id)->get();
+            foreach ($accounts as $account) {
+                CacheHelper::purgePlayerCaches($account->player_id);
+            }
+        });
     }
 }
