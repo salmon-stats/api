@@ -6,6 +6,8 @@ use App\User;
 use Auth;
 use Socialite;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Auth\ConfigurableSocialiteManager;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -13,6 +15,15 @@ use Symfony\Component\HttpFoundation\Cookie;
 class TwitterAuthController extends Controller
 {
     use AuthenticatesUsers;
+
+    private Container $container;
+
+    public function __construct(Container $container)
+    {
+        $this->middleware('guest')->except('logout');
+
+        $this->container = $container;
+    }
 
     static public function getDestination(Request $request = null, $user = null): String
     {
@@ -34,7 +45,23 @@ class TwitterAuthController extends Controller
 
     public function redirectToProvider()
     {
-        return Socialite::driver('twitter')->redirect();
+        $config = config('services.twitter');
+
+        /** @var string */
+        $requestRedirectUrl = request()->get('redirect_to');
+
+        /** @var string[] */
+        $allowedUrls = config('services.twitter.allowed_redirect_urls');
+
+        if (in_array($requestRedirectUrl, $allowedUrls, true)) {
+            $config['redirect'] = $requestRedirectUrl;
+        } else {
+            $config['redirect'] = $allowedUrls[0];
+        }
+
+        $driver = (new ConfigurableSocialiteManager($this->container))->createTwitterDriverWithConfig($config);
+
+        return $driver->redirect();
     }
 
     public function handleProviderCallback()
@@ -83,10 +110,5 @@ class TwitterAuthController extends Controller
     {
         Auth::logout();
         return redirect()->route('index');
-    }
-
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
     }
 }

@@ -47,6 +47,11 @@ return [
     'twitter' => [
         'client_id' => env('TWITTER_CLIENT_ID'),
         'client_secret' => env('TWITTER_CLIENT_SECRET'),
-        'redirect' => env('CALLBACK_URL'),
+        'redirect' => '', // This value is referenced before override, so we need this to prevent warning
+        'allowed_redirect_urls' => [
+            'https://salmon-stats-api.yuki.games/auth/twitter/callback', // The first url will be used by default
+            'http://localhost/auth/twitter/callback',
+            'salmon-stats://',
+        ],
     ],
 ];
