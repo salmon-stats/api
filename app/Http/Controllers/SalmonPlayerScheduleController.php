@@ -104,7 +104,7 @@ class SalmonPlayerScheduleController extends Controller
 
     function index(Request $request)
     {
-        return SalmonPlayerResult::select(DB::raw(<<<QUERY
+        $summariesCollection = SalmonPlayerResult::select(DB::raw(<<<QUERY
         COUNT(*) AS games,
         CONVERT(SUM(CASE WHEN fail_reason_id IS NULL THEN 1 ELSE 0 END), UNSIGNED) AS clear_games,
         CONVERT(SUM(clear_waves), UNSIGNED) AS clear_waves,
@@ -126,6 +126,51 @@ class SalmonPlayerScheduleController extends Controller
             ->groupBy('salmon_results.schedule_id')
             ->orderBy('salmon_results.schedule_id', 'desc')
             ->paginate(10);
+        $summaries = $summariesCollection->toArray();
+
+        $scheduleIds = $summariesCollection->map(fn ($summary) => $summary->schedule_id);
+        $placeholders = implode(',', array_fill(0, $summariesCollection->count(), '?'));
+        $specialUses = DB::select(
+            DB::raw(<<<QUERY
+                WITH cte AS (
+                    SELECT schedule_id,
+                        salmon_player_results.salmon_id,
+                        special_id,
+                        SUM(COUNT) AS count
+                    FROM salmon_player_special_uses
+                        INNER JOIN salmon_results ON salmon_results.id = salmon_player_special_uses.salmon_id
+                        INNER JOIN salmon_player_results ON salmon_player_results.salmon_id = salmon_player_special_uses.salmon_id
+                        AND salmon_player_results.player_id = salmon_player_special_uses.player_id
+                    WHERE salmon_player_special_uses.player_id = ?
+                        AND schedule_id IN ($placeholders)
+                    GROUP BY salmon_player_results.special_id,
+                        salmon_results.schedule_id,
+                        salmon_player_results.salmon_id
+                )
+                SELECT schedule_id,
+                    special_id,
+                    SUM(`count`) AS count,
+                    COUNT(*) AS games
+                FROM cte
+                GROUP BY schedule_id,
+                    special_id
+            QUERY),
+            [$request->player_id, ...$scheduleIds],
+        );
+
+        foreach ($specialUses as $specialUse) {
+            $i = array_keys(array_filter($summaries['data'], fn ($summary) => $summary['schedule_id'] === $specialUse->schedule_id))[0];
+            $summary = &$summaries['data'][$i];
+            if (!array_key_exists('specials', $summary)) {
+                $summary['specials'] = [];
+            }
+            $summary['specials'][$specialUse->special_id] = [
+                'games' => $specialUse->games,
+                'count' => $specialUse->count,
+            ];
+        }
+
+        return $summaries;
     }
 
     function show(Request $request)
@@ -148,6 +193,36 @@ QUERY;
         $weapons = DB::select($weaponsQuery, [
             'player_id' => $request->player_id,
             'json_player_id' => "[\"$request->player_id\"]",
+            'schedule_id' => $scheduleId,
+        ]);
+
+        $specialsQuery = <<<QUERY
+        WITH cte AS (
+            SELECT schedule_id,
+                salmon_player_results.salmon_id,
+                special_id,
+                SUM(COUNT) AS count
+            FROM salmon_player_special_uses
+                INNER JOIN salmon_results ON salmon_results.id = salmon_player_special_uses.salmon_id
+                INNER JOIN salmon_player_results ON salmon_player_results.salmon_id = salmon_player_special_uses.salmon_id
+                AND salmon_player_results.player_id = salmon_player_special_uses.player_id
+            WHERE salmon_player_special_uses.player_id = :player_id
+                AND schedule_id = :schedule_id
+            GROUP BY salmon_player_results.special_id,
+                salmon_results.schedule_id,
+                salmon_player_results.salmon_id
+        )
+        SELECT schedule_id,
+            special_id,
+            SUM(`count`) AS count,
+            COUNT(*) AS games
+        FROM cte
+        GROUP BY schedule_id,
+            special_id
+        QUERY;
+
+        $specials = DB::select($specialsQuery, [
+            'player_id' => $request->player_id,
             'schedule_id' => $scheduleId,
         ]);
 
@@ -218,6 +293,7 @@ QUERY;
         $results = app()->call('App\Http\Controllers\SalmonResultController@index');
 
         $personal_stats = [
+            'specials' => $specials,
             'summary' => $this->getPlayerSummary($request),
             'weapons' => $weapons,
             'results' => $results->items(),
