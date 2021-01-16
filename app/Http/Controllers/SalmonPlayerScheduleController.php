@@ -154,6 +154,7 @@ class SalmonPlayerScheduleController extends Controller
                 FROM cte
                 GROUP BY schedule_id,
                     special_id
+                ORDER BY games DESC, count DESC, special_id
             QUERY),
             [$request->player_id, ...$scheduleIds],
         );
@@ -164,9 +165,10 @@ class SalmonPlayerScheduleController extends Controller
             if (!array_key_exists('specials', $summary)) {
                 $summary['specials'] = [];
             }
-            $summary['specials'][$specialUse->special_id] = [
-                'games' => $specialUse->games,
+            $summary['specials'][] = [
                 'count' => $specialUse->count,
+                'games' => $specialUse->games,
+                'special_id' => $specialUse->special_id,
             ];
         }
 
@@ -219,6 +221,7 @@ QUERY;
         FROM cte
         GROUP BY schedule_id,
             special_id
+        ORDER BY games DESC, count DESC, special_id
         QUERY;
 
         $specials = DB::select($specialsQuery, [
