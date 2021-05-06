@@ -10,22 +10,21 @@
     "require": {
         "php": "^8.0",
         "awobaz/compoships": "^2.0.5",
-        "fakerphp/faker": "^1.12",
+        "fakerphp/faker": "^1.14.1",
         "fideloper/proxy": "^4.4.1",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.2.0",
         "jublonet/codebird-php": "^3.1",
-        "laravel/framework": "^8.17.2",
-        "laravel/socialite": "^5.1.2",
+        "laravel/framework": "^8.40.0",
+        "laravel/socialite": "^5.2.3",
         "laravel/tinker": "^2.5.0",
         "laravel/ui": "^3.1.0",
-        "league/oauth1-client": "dev-master",
         "swaggest/json-schema": "^0.12.11"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.3",
+        "barryvdh/laravel-debugbar": "^3.5.5",
         "beyondcode/laravel-dump-server": "^1.0",
-        "filp/whoops": "^2.0",
+        "filp/whoops": "^2.12.1",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9.0"
