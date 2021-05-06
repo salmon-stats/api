@@ -1,4 +1,4 @@
-FROM php:8.0.0-fpm-alpine3.12
+FROM php:8.0.5-fpm-alpine3.13
 
 RUN docker-php-ext-install pdo_mysql
 
